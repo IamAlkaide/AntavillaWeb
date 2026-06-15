@@ -26,7 +26,7 @@ const btnCerrarModal = document.getElementById("btnCerrarModal");
 const popupNotificacion = document.getElementById("popupNotificacion");
 const cuerpoTabla = document.getElementById("cuerpoTabla");
 
-// 🔥 CORREGIDO: el buscador ya NO usa inputISBN
+// 🔥 CORREGIDO: el buscador usa inputBuscar (sin conflicto con el ISBN del formulario)
 const inputBusqueda = document.getElementById("inputBuscar");
 
 const btnBuscar = document.getElementById("btnBuscar");
@@ -250,7 +250,7 @@ function renderizarTabla(libros) {
     }
 
     const btnAcciones = emailSocioActual === libro.mail_socio
-      ? `<button class="btn-delete" data-libro-id="${libro.id}">🗑️</button>`
+      ? `<button class="btn-donado" data-libro-id="${libro.id}" ${!libro.estado ? "disabled" : ""}>DONADO</button>`
       : `<span style="color:#ccc;">—</span>`;
 
     return `
@@ -266,7 +266,7 @@ function renderizarTabla(libros) {
       </tr>`;
   }).join("");
 
-  document.querySelectorAll(".btn-delete").forEach(btn => {
+  document.querySelectorAll(".btn-donado").forEach(btn => {
     btn.addEventListener("click", async () => {
       await marcarComoNoDisponible(btn.dataset.libroId);
     });
@@ -315,7 +315,7 @@ btnLimpiar.addEventListener("click", () => { inputBusqueda.value = ""; buscar(""
 // ========== EMAIL SOCIO ACTUAL ==========
 async function obtenerEmailSocioActual() {
   try {
-    const emailGuardado = localStorage.getItem("emailSocio");
+    const emailGuardado = localStorage.getItem("socioEmail");
     if (emailGuardado) {
       emailSocioActual = emailGuardado;
       return;
@@ -323,7 +323,7 @@ async function obtenerEmailSocioActual() {
 
     if (auth.currentUser) {
       emailSocioActual = auth.currentUser.email;
-      localStorage.setItem("emailSocio", emailSocioActual);
+      localStorage.setItem("socioEmail", emailSocioActual);
       return;
     }
 
@@ -336,9 +336,11 @@ async function obtenerEmailSocioActual() {
 // ========== INICIALIZACIÓN ==========
 async function init() {
   if (localStorage.getItem("socioActivo") !== "true") {
-    window.location.href = "/socios.html";
+    window.location.href = "/no-acceso.html";
     return;
   }
+
+  document.getElementById("contenidoPrivado").style.display = "block";
 
   await obtenerEmailSocioActual();
   await cargarLibros();

@@ -1,6 +1,6 @@
 import { db } from "/app.js";
 import {
-  collection, query, where, getDocs, setDoc, doc
+  collection, query, where, getDocs, setDoc, doc, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // ── Utilidades ──────────────────────────────────────────
@@ -144,5 +144,61 @@ document.getElementById("btnRegistro").addEventListener("click", async () => {
     mostrarError("registroError", "Error de conexión. Inténtalo de nuevo.");
   } finally {
     btn.disabled = false; btn.textContent = "Crear acceso";
+  }
+});
+
+// ── RESET CONTRASEÑA ─────────────────────────────────
+document.getElementById("btnReset").addEventListener("click", async () => {
+  ocultarError("resetError");
+  document.getElementById("resetOk").classList.remove("visible");
+
+  const email = document.getElementById("resetEmail").value.trim().toLowerCase();
+  const pass1 = document.getElementById("resetPassword").value;
+  const pass2 = document.getElementById("resetPassword2").value;
+  const btn   = document.getElementById("btnReset");
+
+  if (!email || !pass1 || !pass2) {
+    mostrarError("resetError", "Rellena todos los campos."); return;
+  }
+  if (pass1.length < 6) {
+    mostrarError("resetError", "La contraseña debe tener al menos 6 caracteres."); return;
+  }
+  if (pass1 !== pass2) {
+    mostrarError("resetError", "Las contraseñas no coinciden."); return;
+  }
+
+  btn.disabled = true; btn.textContent = "Comprobando...";
+
+  try {
+    // Verificar que el email tiene acceso registrado
+    const q    = query(collection(db, "accesos"), where("mail", "==", email));
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      mostrarError("resetError", "No existe ninguna cuenta con ese email. Usa 'Registrarse' primero."); return;
+    }
+
+    // Verificar que el socio sigue activo
+    const socioQ    = query(collection(db, "socios"), where("mail", "==", email));
+    const socioSnap = await getDocs(socioQ);
+    if (socioSnap.empty || !socioSnap.docs[0].data().activo) {
+      mostrarError("resetError", "Tu cuenta de socio no está activa. Contacta con la AFA."); return;
+    }
+
+    // Actualizar el hash en Firestore
+    const hash  = await sha256(pass1);
+    const docId = snap.docs[0].id;
+    await updateDoc(doc(db, "accesos", docId), { passwordHash: hash });
+
+    mostrarOk("resetOk", "✅ Contraseña actualizada correctamente. Ya puedes iniciar sesión.");
+    ["resetEmail","resetPassword","resetPassword2"].forEach(id => {
+      document.getElementById(id).value = "";
+    });
+
+  } catch (err) {
+    console.error(err);
+    mostrarError("resetError", "Error de conexión. Inténtalo de nuevo.");
+  } finally {
+    btn.disabled = false; btn.textContent = "Cambiar contraseña";
   }
 });

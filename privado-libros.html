@@ -5,26 +5,20 @@
   <title>Tablón de Libros - AFA Antavilla</title>
   <link rel="stylesheet" href="/styles.css">
   <style>
+
+    /* ── MODAL ─────────────────────────────────────────── */
     .modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 2000;
-
-  /* Mantiene el modal visible y completo */
-  justify-content: center;
-  align-items: flex-start;
-  padding: 40px 0;
-  overflow-y: auto;
-
-  animation: fadeIn 0.3s ease;
-}
-
-
-    .modal-overlay.active {
-      display: flex;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 0;
+      overflow-y: auto;
     }
+    .modal-overlay.active { display: flex; }
 
     .modal-content {
       background: white;
@@ -32,224 +26,267 @@
       padding: 32px;
       max-width: 500px;
       width: 90%;
-      max-height: 90vh;
       overflow-y: auto;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      animation: slideUp 0.3s ease;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     }
-	body {
-  background: #f5f7fa; /* o el color que tenías antes */
-}
+    .modal-content input,
+    .modal-content select,
+    .modal-content textarea {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: #333;
+      width: 100%;
+      box-sizing: border-box;
+    }
 
-.btn-form,
-.btn-modal-primary {
-  border-radius: 10px;
-  background: #005bbb;
-  color: white;
-  padding: 14px 26px;
-  font-size: 16px;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: 0.2s;
-}
+    /* ── FORMULARIO ────────────────────────────────────── */
+    .btn-form {
+      border-radius: 10px;
+      background: #005bbb;
+      color: white;
+      padding: 14px 26px;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-form:hover { background: #004a9a; }
 
+    .form-group { margin-bottom: 16px; }
 
-.modal-content input,
-.modal-content select,
-.modal-content textarea {
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 10px 12px;
-  font-size: 14px;
-  color: #333;
-}
+    .error-message {
+      color: #c62828;
+      font-size: 12px;
+      margin-top: 4px;
+      display: none;
+    }
+    .error-message.show { display: block; }
 
-body {
-  background: #f5f7fa;
-}
-.btn-form,
-.btn-modal-primary {
-  background: #005bbb !important;
-  color: white !important;
-}
+    input.error, select.error { border-color: #c62828 !important; }
 
-.btn-modal-primary:hover {
-  background: #004a9a !important;
-}
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
 
+    /* ── TABLÓN HEADER ─────────────────────────────────── */
+    .tablon-header {
+      background: #fffbea;
+      border: 1px solid #f0d060;
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 0;
+    }
 
-.modal-content {
-  background: white;
-  border-radius: 12px;
-  padding: 32px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-}
-.tablon-header {
-  background: #fffbea;
-  border: 1px solid #f0d060;
-  border-radius: 12px;
-  padding: 24px 28px;
-}
-.buscador-wrap {
-  width: 100%;
-  max-width: 100%;
-  display: flex;
-  gap: 10px;
-  margin: 24px 0 16px 0;
-}
+    /* ── BUSCADOR ──────────────────────────────────────── */
+    .buscador-wrap {
+      width: 100%;
+      display: flex;
+      gap: 10px;
+      margin: 24px 0 16px 0;
+    }
+    .buscador-wrap input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid #bcd0e6;
+      font-size: 15px;
+    }
+    .buscador-wrap input:focus {
+      border-color: #005bbb;
+      outline: none;
+    }
+    .buscador-wrap button {
+      border-radius: 10px;
+      background: rgba(0,91,187,0.12);
+      color: #005bbb;
+      border: 1px solid #005bbb;
+      padding: 10px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .buscador-wrap button:hover { background: rgba(0,91,187,0.22); }
 
+    .btn-limpiar {
+      background: rgba(0,0,0,0.05) !important;
+      border: 1px solid #ccc !important;
+      color: #666 !important;
+    }
+    .btn-limpiar:hover { background: rgba(0,0,0,0.10) !important; }
 
-.buscador-wrap input {
-  flex: 1;
-  width: 100%;
-  padding: 12px 16px;
-  border-radius: 10px;
-  border: 1px solid #bcd0e6;
-  background: rgba(255, 255, 255, 1);
-  font-size: 15px;
-  transition: 0.2s;
-}
+    /* ── TABLA ─────────────────────────────────────────── */
+    .tabla-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      font-size: 14px;
+    }
+    thead th {
+      background: #005bbb;
+      color: white;
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    tbody tr:nth-child(even) { background: #f7f9fc; }
+    tbody tr:hover { background: #eef4ff; }
+    tbody td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #eee;
+      color: #333;
+      vertical-align: middle;
+    }
+    .cargando, .sin-resultados {
+      text-align: center;
+      color: #888;
+      padding: 24px;
+    }
 
-.buscador-wrap input:focus {
-  border-color: #005bbb;
-  background: rgba(0, 91, 187, 0.15);
-  outline: none;
-}
+    /* ── BADGES DE ESTADO ──────────────────────────────── */
+    .badge-disponible {
+      display: inline-block;
+      background: #e6f4ea;
+      color: #2e7d32;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .badge-nodisp {
+      display: inline-block;
+      background: #fdecea;
+      color: #c62828;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
 
+    /* ── BOTÓN DONADO ──────────────────────────────────── */
+    .btn-donado {
+      background: #e65100;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: background .15s, opacity .15s;
+      white-space: nowrap;
+    }
+    .btn-donado:hover { background: #bf360c; }
+    .btn-donado:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
 
-.buscador-wrap button {
-  border-radius: 10px;
-  background: rgba(0, 91, 187, 0.15);
-  color: #005bbb;
-  border: 1px solid #005bbb;
-  padding: 10px 20px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
+    /* ── POPUP ─────────────────────────────────────────── */
+    .popup-notification {
+      display: none;
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 280px;
+      padding: 20px 28px;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+      z-index: 9999;
+      text-align: center;
+    }
+    .popup-notification.active { display: block; }
+    .popup-notification.success {
+      border-left: 6px solid #2e7d32;
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .popup-notification.error {
+      border-left: 6px solid #c62828;
+      background: #fdecea;
+      color: #c62828;
+    }
+    .popup-notification h3 {
+      margin: 0 0 6px 0;
+      font-size: 17px;
+      font-weight: 700;
+    }
+    .popup-notification p {
+      margin: 0;
+      font-size: 14px;
+    }
 
-.buscador-wrap button:hover {
-  background: rgba(0, 91, 187, 0.25);
-}
+    /* ── BOTÓN CANCELAR ────────────────────────────────── */
+    .btn-cancelar {
+      background: transparent;
+      color: #666;
+      border: none;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background .15s, color .15s;
+    }
+    .btn-cancelar:hover {
+      background: #f0f0f0;
+      color: #333;
+    }
 
-.btn-limpiar {
-  background: rgba(0, 0, 0, 0.05) !important;
-  border: 1px solid #ccc !important;
-  color: #666 !important;
-}
+    /* ── CHECKBOX ──────────────────────────────────────── */
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .checkbox-group input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      flex-shrink: 0;
+      cursor: pointer;
+      accent-color: #005bbb;
+    }
+    .checkbox-group label {
+      font-size: 14px;
+      color: #444;
+      cursor: pointer;
+      margin: 0;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #005bbb;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .back-link:hover { text-decoration: underline; }
 
-.btn-limpiar:hover {
-  background: rgba(0, 0, 0, 0.1) !important;
-}
-
-
-.tabla-wrap {
-  overflow-x: auto;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  font-size: 14px;
-}
-
-thead th {
-  background: #005bbb;
-  color: white;
-  padding: 12px 14px;
-  text-align: left;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-tbody tr:nth-child(even) {
-  background: #f7f9fc;
-}
-
-tbody tr:hover {
-  background: #eef4ff;
-}
-
-tbody td {
-  padding: 10px 14px;
-  border-bottom: 1px solid #eee;
-  color: #333;
-  vertical-align: top;
-}
-
-
-<!-- MODAL FORMULARIO -->
-.form-group {
-  margin-bottom: 32px;
-}
-
-.btn-modal-secondary {
-  background: white !important;
-  color: #005bbb !important;
-  border: 2px solid #005bbb !important;
-  border-radius: 10px;
-  font-weight: 600;
-  transition: 0.2s;
-}
-
-.btn-modal-secondary:hover {
-  background: #eef4ff !important;
-}
-
-<!-- POPUP FORMULARIO -->
-.popup-notification {
-  position: fixed;
-  top: 30px; /* aparece arriba */
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  padding: 20px 28px;
-  border-radius: 10px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-  z-index: 3000;
-  display: none;
-  min-width: 260px;
-  text-align: center;
-  animation: fadeSlide 0.3s ease;
-}
-
-@keyframes fadeSlide {
-  from { opacity: 0; transform: translate(-50%, -10px); }
-  to   { opacity: 1; transform: translate(-50%, 0); }
-}
-
-.popup-notification.success {
-  border-left: 6px solid #2e7d32;
-  background: #e8f5e9;
-  color: #2e7d32;
-}
-
-.popup-notification.error {
-  border-left: 6px solid #c62828;
-  background: #fdecea;
-  color: #c62828;
-}
-
-.popup-notification h3 {
-  margin: 0 0 8px 0;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.popup-notification p {
-  margin: 0;
-  font-size: 14px;
-}
-
+    /* ── RESPONSIVE ────────────────────────────────────── */
+    @media (max-width: 480px) {
+      .buscador-wrap { flex-direction: column; }
+    }
 
   </style>
 </head>
-
 <body>
 
 <nav class="navbar">
@@ -281,6 +318,7 @@ tbody td {
   <div class="banner-stripe-blue"></div>
 </header>
 
+<div id="contenidoPrivado" style="display:none">
 <section class="section">
 
   <a href="/privado.html" class="back-link">← Volver al área de socios</a>
@@ -288,14 +326,12 @@ tbody td {
   <div class="tablon-header">
     <h2>📚 Tablón de Donación de Libros de Texto y Lectura</h2>
     <h3>AFA SEI Antavilla</h3>
-
     <p style="color:#444; font-size:15px; line-height:1.7; margin-bottom:12px;">
       Hola Familias,<br>
       Este formulario sirve para que deis de alta los libros de texto y lectura que ofrecéis gratuitamente a otras familias del centro.<br>
       <strong>IMPORTANTE</strong><br>
       Si ya habéis intercambiado el libro debéis volver a rellenar el formulario indicando que el libro ya ha sido donado.
     </p>
-
     <strong style="color:#333;">Normas:</strong>
     <ol class="normas">
       <li><strong>Gratuidad absoluta:</strong> queda totalmente prohibida la venta de libros por este medio.</li>
@@ -306,19 +342,18 @@ tbody td {
       <li><strong>Solo socios:</strong> acceso exclusivo.</li>
       <li><strong>Difundid:</strong> animad a otras familias.</li>
     </ol>
-
     <button class="btn-form" id="btnAbrirFormulario">
       📝 Añadir mi libro al tablón
     </button>
   </div>
 
   <div class="buscador-wrap">
-    <input type="text" id="inputISBN" placeholder="Buscar por ISBN, título, asignatura o curso..." />
+    <input type="text" id="inputBuscar" placeholder="Buscar por ISBN, título, asignatura o curso..." />
     <button id="btnBuscar">🔍 Buscar</button>
     <button class="btn-limpiar" id="btnLimpiar">✕ Limpiar</button>
   </div>
 
-  <div id="contadorResultados"></div>
+  <div id="contadorResultados" style="margin-bottom:8px; font-size:14px; color:#555;"></div>
 
   <div class="tabla-wrap">
     <table>
@@ -341,15 +376,14 @@ tbody td {
   </div>
 
 </section>
+</div>
 
 <!-- MODAL FORMULARIO -->
 <div class="modal-overlay" id="modalFormulario">
   <div class="modal-content">
-
     <div class="modal-header">
       <h2>Añadir Libro al Tablón</h2>
     </div>
-
     <form id="formAgregarLibro" novalidate>
 
       <div class="form-group">
@@ -357,7 +391,7 @@ tbody td {
         <input type="text" id="inputAsignatura" required>
         <div class="error-message" id="errorAsignatura"></div>
       </div>
-	  <br>
+
       <div class="form-group">
         <label for="inputCurso">Curso *</label>
         <select id="inputCurso" required>
@@ -379,31 +413,31 @@ tbody td {
         </select>
         <div class="error-message" id="errorCurso"></div>
       </div>
-<br>
+
       <div class="form-group">
         <label for="inputISBN">ISBN *</label>
         <input type="text" id="inputISBN" required>
         <div class="error-message" id="errorISBN"></div>
       </div>
-<br>
+
       <div class="form-group">
         <label for="inputPropietario">Propietario *</label>
         <input type="text" id="inputPropietario" required>
         <div class="error-message" id="errorPropietario"></div>
       </div>
-<br>
+
       <div class="form-group">
         <label for="inputMailSocio">Email del Socio *</label>
         <input type="email" id="inputMailSocio" required>
         <div class="error-message" id="errorMailSocio"></div>
       </div>
-<br>
+
       <div class="form-group">
         <label for="inputContacto">Contacto *</label>
         <input type="text" id="inputContacto" required>
         <div class="error-message" id="errorContacto"></div>
       </div>
-<br>
+
       <div class="form-group">
         <label for="inputEstado">Estado *</label>
         <select id="inputEstado" required>
@@ -413,23 +447,22 @@ tbody td {
         </select>
         <div class="error-message" id="errorEstado"></div>
       </div>
-<br>
+
       <div class="form-group">
         <label for="inputComentario">Comentario</label>
-        <textarea id="inputComentario"></textarea>
+        <textarea id="inputComentario" rows="3"></textarea>
         <div class="error-message" id="errorComentario"></div>
       </div>
-<br>
+
       <div class="form-group">
-        <label>Autorización</label>
         <div class="checkbox-group">
           <input type="checkbox" id="inputAutorizacion" checked>
           <label for="inputAutorizacion">Autorizo la publicación de mis datos</label>
         </div>
       </div>
-<br>
+
       <div class="modal-footer">
-        <button type="button" class="btn-limpiar" id="btnCerrarModal">Cancelar</button>
+        <button type="button" id="btnCerrarModal" class="btn-cancelar">Cancelar</button>
         <button type="submit" class="btn-form">Agregar Libro</button>
       </div>
 
@@ -449,7 +482,6 @@ tbody td {
   <a href="/encuestas">Encuestas</a>
 </footer>
 
-<!-- FIREBASE COMO MÓDULO -->
 <script type="module" src="/app.js"></script>
 <script type="module" src="/privado-libros.js"></script>
 

@@ -106,6 +106,13 @@
       font-size: 14px;
     }
     .msg-ok.visible { display: block; }
+    .link-olvide {
+      color: #005bbb;
+      font-size: 13px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .link-olvide:hover { text-decoration: underline; }
     .panel { display: none; }
     .panel.active { display: block; }
   </style>
@@ -163,14 +170,43 @@
             <input id="loginPassword" type="password" placeholder="••••••••" class="input" autocomplete="current-password">
           </div>
           <button class="btn-primary" id="btnLogin">Entrar</button>
+          <p style="text-align:center; margin:4px 0 0 0;">
+            <a href="#" class="link-olvide" onclick="mostrarPanel('reset'); return false;">¿Olvidaste tu contraseña?</a>
+          </p>
         </div>
         <p id="loginError" class="msg-error"></p>
+      </div>
+
+      <!-- PANEL RESET -->
+      <div id="panelReset" class="panel">
+        <h2>Restablecer contraseña</h2>
+        <p class="subtitulo">Introduce tu email y tu nueva contraseña.</p>
+        <div class="input-group">
+          <div>
+            <label class="input-label">Email</label>
+            <input id="resetEmail" type="email" placeholder="tu@email.com" class="input" autocomplete="email">
+          </div>
+          <div>
+            <label class="input-label">Nueva contraseña (mínimo 6 caracteres)</label>
+            <input id="resetPassword" type="password" placeholder="••••••••" class="input">
+          </div>
+          <div>
+            <label class="input-label">Repetir nueva contraseña</label>
+            <input id="resetPassword2" type="password" placeholder="••••••••" class="input">
+          </div>
+          <button class="btn-primary" id="btnReset">Cambiar contraseña</button>
+          <p style="text-align:center; margin:4px 0 0 0;">
+            <a href="#" class="link-olvide" onclick="mostrarPanel('login'); return false;">← Volver al inicio de sesión</a>
+          </p>
+        </div>
+        <p id="resetError" class="msg-error"></p>
+        <p id="resetOk" class="msg-ok"></p>
       </div>
 
       <!-- PANEL REGISTRO -->
       <div id="panelRegistro" class="panel">
         <h2>Crear acceso</h2>
-        <p class="subtitulo">Solo para socios activos. Necesitas tu número de socio para registrarte.</p>
+        <p class="subtitulo">Solo para socios activos. Necesitas tu email de socio para registrarte.</p>
         <div class="input-group">
           <div>
             <label class="input-label">Email (el mismo que está en tu ficha de socio)</label>
@@ -204,6 +240,7 @@
   function mostrarPanel(cual) {
     document.getElementById("panelLogin").classList.toggle("active", cual === "login");
     document.getElementById("panelRegistro").classList.toggle("active", cual === "registro");
+    document.getElementById("panelReset").classList.toggle("active", cual === "reset");
     document.getElementById("tabLogin").classList.toggle("active", cual === "login");
     document.getElementById("tabRegistro").classList.toggle("active", cual === "registro");
   }

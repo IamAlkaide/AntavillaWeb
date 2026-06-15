@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Acceso denegado - AFA Antavilla</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .acceso-wrap {
+      max-width: 480px;
+      margin: 60px auto;
+      text-align: center;
+      padding: 0 16px;
+    }
+    .acceso-icon {
+      font-size: 72px;
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    .acceso-wrap h1 {
+      font-size: 26px;
+      color: #003f88;
+      margin: 0 0 12px 0;
+    }
+    .acceso-wrap p {
+      color: #555;
+      font-size: 16px;
+      line-height: 1.7;
+      margin: 0 0 28px 0;
+    }
+    .acceso-btn-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-login {
+      background: #005bbb;
+      color: white;
+      padding: 13px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 700;
+      transition: background .15s;
+    }
+    .btn-login:hover { background: #004a9a; }
+    .btn-inicio {
+      background: white;
+      color: #005bbb;
+      border: 2px solid #005bbb;
+      padding: 13px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 700;
+      transition: background .15s;
+    }
+    .btn-inicio:hover { background: #f0f6ff; }
+    .acceso-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.09);
+      border: 1px solid #e8e8e8;
+      padding: 40px 32px;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-logo">
+    <a href="/index.html">APA Antavilla</a>
+  </div>
+  <button class="nav-toggle" id="navToggle" aria-label="Menú"><span></span><span></span><span></span></button>
+  <div class="nav-links" id="navLinks">
+    <a href="/">Inicio</a>
+    <a href="/noticias">Noticias</a>
+    <a href="/eventos">Eventos</a>
+    <a href="/socios">Socios</a>
+    <a href="/conocenos">Conócenos</a>
+  </div>
+</nav>
+
+<header class="banner-afa">
+  <div class="banner-afa-inner">
+    <img class="banner-logo-apa" src="/img/LogoAntavilla.jpg" alt="Logo AFA Antavilla">
+    <div class="banner-center">
+      <h1>AFA Antavilla</h1>
+      <div class="banner-sep"></div>
+      <p class="banner-sub">Asociación de Familias de Alumnos</p>
+      <p class="banner-loc">SEI Antavilla · Villanueva del Pardillo</p>
+    </div>
+    <img class="banner-logo-sei" src="/img/LogoSEI.png" alt="Logo Colegios SEI">
+  </div>
+  <div class="banner-stripe-gold"></div>
+  <div class="banner-stripe-blue"></div>
+</header>
+
+<section class="section">
+  <div class="acceso-wrap">
+    <div class="acceso-card">
+      <div class="acceso-icon">🔒</div>
+      <h1>Acceso restringido</h1>
+      <p>
+        Esta sección es exclusiva para socios de la AFA Antavilla.<br>
+        Necesitas iniciar sesión para continuar.
+      </p>
+      <div class="acceso-btn-group">
+        <a href="/socios.html" class="btn-login">Iniciar sesión</a>
+        <a href="/index.html" class="btn-inicio">Volver al inicio</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <a href="/conocenos">Conócenos</a>
+  <a href="https://chat.whatsapp.com/EoKCLMT5dkZL4YMehx7mqn">WhatsApp</a>
+  <a href="/encuestas">Encuestas</a>
+</footer>
+
+<script>
+  var t = document.getElementById("navToggle");
+  if(t) t.addEventListener("click", function() {
+    document.getElementById("navLinks").classList.toggle("open");
+  });
+</script>
+</body>
+</html>
