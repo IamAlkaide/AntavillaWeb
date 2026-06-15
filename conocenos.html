@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Conócenos - AFA Antavilla</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .section-title {
+      font-size: 26px;
+      font-weight: bold;
+      border-bottom: 3px solid #e6a800;
+      padding-bottom: 8px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .section-num {
+      color: #e6a800;
+      font-size: 22px;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    .intro-text {
+      color: #222;
+      font-size: 17px;
+      line-height: 1.8;
+      margin-bottom: 32px;
+      text-align: center;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+.miembros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+  justify-items: center;   /* CENTRA cada tarjeta */
+  justify-content: center; /* CENTRA el grid completo */
+}
+
+    .miembro-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #e8e8e8;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+      text-align: center;
+    }
+    .miembro-foto {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center top;
+      border: 3px solid #e6a800;
+      margin-bottom: 8px;
+    }
+    .miembro-nombre {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 0;
+      color: #111;
+    }
+    .miembro-cargo {
+      color: #e6a800;
+      font-style: italic;
+      font-size: 14px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .miembro-subtitulo {
+      color: #888;
+      font-size: 13px;
+      font-style: italic;
+    }
+    .miembro-desc {
+      color: #444;
+      font-size: 15px;
+      margin-top: 6px;
+      line-height: 1.6;
+    }
+    .contact-banner {
+      background: #005bbb;
+      color: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+    .contact-banner p {
+      margin: 6px 0;
+      font-size: 16px;
+    }
+    .contact-banner a {
+      color: #ffd700;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-logo">
+    <a href="/index.html">APA Antavilla</a>
+  </div>
+  <button class="nav-toggle" id="navToggle" aria-label="Menú"><span></span><span></span><span></span></button>
+  <div class="nav-links" id="navLinks">
+    <a href="/">Inicio</a>
+    <a href="/noticias">Noticias</a>
+    <a href="/eventos">Eventos</a>
+    <a href="/socios">Socios</a>
+    <a href="/conocenos">Conócenos</a>
+  </div>
+</nav>
+
+<header class="banner-afa">
+  <div class="banner-afa-inner">
+    <img class="banner-logo-apa" src="/img/LogoAntavilla.jpg" alt="Logo AFA Antavilla">
+    <div class="banner-center">
+      <h1>AFA Antavilla</h1>
+      <div class="banner-sep"></div>
+      <p class="banner-sub">Asociación de Familias de Alumnos</p>
+      <p class="banner-loc">SEI Antavilla · Villanueva del Pardillo</p>
+    </div>
+    <img class="banner-logo-sei" src="/img/LogoSEI.png" alt="Logo Colegios SEI">
+  </div>
+  <div class="banner-stripe-gold"></div>
+  <div class="banner-stripe-blue"></div>
+</header>
+
+<section class="section">
+
+  <div class="section-title">
+    <span class="section-num">01</span> PONLE CARA A LA AFA
+  </div>
+
+  <p class="intro-text">
+    Seis personas, más o menos en su sano juicio, han decidido voluntariamente dedicar su tiempo libre
+    a hacer de Antavilla un colegio mejor. Aquí van, sin filtros, unos retratos de estas personas para que
+    les pongas cara por si te las encuentras en el cole.
+  </p>
+
+  <div class="miembros-grid">
+
+    <div class="miembro-card">
+      <img src="/img/carlos.png" alt="Carlos" class="miembro-foto">
+      <p class="miembro-nombre">Don Carlos</p>
+      <p class="miembro-cargo">Presidente</p>
+      <p class="miembro-desc">Presidente por vocación. Siempre dispuesto a hablar, coordinar y reunirse con quien haga falta para que la AFA continúe a flote.</p>
+      <p class="miembro-subtitulo">Disponible para reunirse</p>
+    </div>
+
+    <div class="miembro-card">
+      <img src="/img/paola.png" alt="Paola" class="miembro-foto">
+      <p class="miembro-nombre">Paola</p>
+      <p class="miembro-cargo">📡 Vicepresidenta</p>
+      <p class="miembro-desc">Es imposible no haberse cruzado con Paola en la puerta del cole. Nuestra relaciones públicas por excelencia y, dentro de la AFA, siempre arrimando el hombro.</p>
+      <p class="miembro-subtitulo">Antena social de la AFA</p>
+    </div>
+
+    <div class="miembro-card">
+      <img src="/img/bea.png" alt="Bea" class="miembro-foto">
+      <p class="miembro-nombre">Bea</p>
+      <p class="miembro-cargo">✍️ Secretaria</p>
+      <p class="miembro-desc">Si alguna vez te llegó un email de la AFA con un estilazo de redacción que no parece de este planeta, ella está detrás. Sin Beatriz estaríamos todos perdidos entre borradores y faltas de ortografía.</p>
+      <p class="miembro-subtitulo">Escritora de élite</p>
+    </div>
+
+    <div class="miembro-card">
+      <img src="/img/rocio.png" alt="Rocío" class="miembro-foto">
+      <p class="miembro-nombre">Rocío</p>
+      <p class="miembro-cargo">🐉 Tesorera</p>
+      <p class="miembro-desc">Aunque se considera más de letras que de mates, ha asumido el cargo. Si la ves por el cole, no le pidas dinero. Nunca. Jamás. Por el bien de las cuentas.</p>
+      <p class="miembro-subtitulo">Guardiana de las arcas</p>
+    </div>
+
+    <div class="miembro-card">
+      <img src="/img/laura.png" alt="Laura" class="miembro-foto">
+      <p class="miembro-nombre">Laura</p>
+      <p class="miembro-cargo">📚 Vocal 1</p>
+      <p class="miembro-desc">Nuestra fuente de saber en el ámbito educativo. Sin ella iríamos como pollos sin cabeza en los temas que más nos preocupan.</p>
+      <p class="miembro-subtitulo">GPS educativo de la AFA</p>
+    </div>
+
+    <div class="miembro-card">
+      <img src="/img/antonio.png" alt="Antonio" class="miembro-foto">
+      <p class="miembro-nombre">Antonio</p>
+      <p class="miembro-cargo">🕵 Vocal 2</p>
+      <p class="miembro-desc">Nuestro pase de oro a la ESO y primaria. Antonio es nuestro topo en esos ciclos y, sin él, no llegaríamos a entender sus realidades y necesidades.</p>
+      <p class="miembro-subtitulo">Topo oficial de la AFA</p>
+    </div>
+
+  </div>
+
+  <div class="contact-banner">
+    <p>¿Tienes propuestas, inquietudes o ideas? La AFA somos la voz de todas las familias.</p>
+    <p>Escríbenos a <a href="mailto:apa@colegioseiantavilla.com">apa@colegioseiantavilla.com</a></p>
+    <p>Entra en nuestra encuesta y <a href="https://docs.google.com/forms/d/e/1FAIpQLSe_iyzJV7Pve1Wb1ObuzB0mY7vmKJDSUK6GiOgirh0emIndmA/viewform?usp=dialog">¡Danos ideas!</a></p>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <a href="/conocenos">Conócenos</a>
+  <a href="https://chat.whatsapp.com/EoKCLMT5dkZL4YMehx7mqn">WhatsApp</a>
+  <a href="/encuestas">Encuestas</a>
+</footer>
+
+<script>
+  var t = document.getElementById("navToggle");
+  if(t) t.addEventListener("click", function() {
+    document.getElementById("navLinks").classList.toggle("open");
+  });
+</script>
+</body>
+</html>

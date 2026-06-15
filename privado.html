@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Zona Privada - AFA Antavilla</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* HERO BIENVENIDA */
+    .bienvenida-hero {
+      background: linear-gradient(135deg, #005bbb 0%, #0099ff 100%);
+      border-radius: 16px;
+      padding: 36px 32px;
+      color: white;
+      text-align: center;
+      margin-bottom: 36px;
+      position: relative;
+    }
+    .bienvenida-hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .bienvenida-hero h2 {
+      font-size: 28px;
+      margin: 0 0 10px 0;
+    }
+    .bienvenida-hero p {
+      font-size: 16px;
+      opacity: 0.9;
+      margin: 0 0 20px 0;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+    .btn-salir {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.5);
+      color: white;
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+    }
+    .btn-salir:hover { background: rgba(255,255,255,0.25); }
+
+    /* GRID DE SECCIONES */
+    .secciones-titulo {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 16px;
+    }
+    .secciones-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 18px;
+      margin-bottom: 40px;
+    }
+    .seccion-card {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      border: 1px solid #e8e8e8;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform .15s, box-shadow .15s;
+      display: flex;
+      flex-direction: column;
+    }
+    .seccion-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    .seccion-card.proximamente {
+      opacity: 0.55;
+      pointer-events: none;
+    }
+    .seccion-img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      background: #e8f0fe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 52px;
+    }
+    .seccion-body {
+      padding: 16px 18px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .seccion-body h3 {
+      margin: 0;
+      font-size: 17px;
+      color: #111;
+    }
+    .seccion-body p {
+      margin: 0;
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+    .seccion-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-top: 4px;
+      width: fit-content;
+    }
+    .tag-activo   { background: #e6f4ea; color: #2e7d32; }
+    .tag-pronto   { background: #fff3e0; color: #e65100; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-logo">AFA Antavilla</div>
+  <button class="nav-toggle" id="navToggle" aria-label="Menú"><span></span><span></span><span></span></button>
+  <div class="nav-links" id="navLinks">
+    <a href="/">Inicio</a>
+    <a href="/noticias">Noticias</a>
+    <a href="/eventos">Eventos</a>
+    <a href="/socios">Socios</a>
+    <a href="/conocenos">Conócenos</a>
+  </div>
+</nav>
+
+<header class="banner-afa">
+  <div class="banner-afa-inner">
+    <img class="banner-logo-apa" src="/img/LogoAntavilla.jpg" alt="Logo AFA Antavilla">
+    <div class="banner-center">
+      <h1>AFA Antavilla</h1>
+      <div class="banner-sep"></div>
+      <p class="banner-sub">Asociación de Familias de Alumnos</p>
+      <p class="banner-loc">SEI Antavilla · Villanueva del Pardillo</p>
+    </div>
+    <img class="banner-logo-sei" src="/img/LogoSEI.png" alt="Logo Colegios SEI">
+  </div>
+  <div class="banner-stripe-gold"></div>
+  <div class="banner-stripe-blue"></div>
+</header>
+
+<section class="section">
+
+  <!-- BIENVENIDA -->
+  <div class="bienvenida-hero">
+    <button class="btn-salir" id="btnSalir">Cerrar sesión</button>
+    <div class="badge">⭐ Área exclusiva socios</div>
+    <h2 id="saludo">¡Bienvenido/a!</h2>
+    <p>
+      Estás en el espacio reservado para las familias socias de la AFA Antavilla.
+      Aquí encontrarás recursos, herramientas e información exclusiva pensada para ti.
+      ¡Gracias por formar parte de nuestra comunidad! 🎉
+    </p>
+  </div>
+
+  <!-- SECCIONES -->
+  <div class="secciones-titulo">¿Qué quieres hacer hoy?</div>
+
+  <div class="secciones-grid">
+
+    <a href="/privado-libros.html" class="seccion-card">
+      <div class="seccion-img">📚</div>
+      <div class="seccion-body">
+        <h3>Tablón de libros</h3>
+        <p>Dona o encuentra libros de texto y lectura entre las familias del centro.</p>
+        <span class="seccion-tag tag-activo">✅ Disponible</span>
+      </div>
+    </a>
+
+    <a href="/privado-newsletter.html" class="seccion-card">
+      <div class="seccion-img">📰</div>
+      <div class="seccion-body">
+        <h3>Newsletter</h3>
+        <p>Consulta y descarga todas las newsletters publicadas por la AFA.</p>
+        <span class="seccion-tag tag-activo">✅ Disponible</span>
+      </div>
+    </a>
+
+    <div class="seccion-card proximamente">
+      <div class="seccion-img">👕</div>
+      <div class="seccion-body">
+        <h3>Intercambio de uniformes</h3>
+        <p>Consulta el stock disponible de uniformes para el próximo curso.</p>
+        <span class="seccion-tag tag-pronto">🕐 Próximamente</span>
+      </div>
+    </div>
+
+    <div class="seccion-card proximamente">
+      <div class="seccion-img">🗳️</div>
+      <div class="seccion-body">
+        <h3>Encuestas privadas</h3>
+        <p>Participa en consultas exclusivas para socios sobre el colegio.</p>
+        <span class="seccion-tag tag-pronto">🕐 Próximamente</span>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<footer class="footer">
+  <a href="/conocenos">Conócenos</a>
+  <a href="https://chat.whatsapp.com/EoKCLMT5dkZL4YMehx7mqn">WhatsApp</a>
+  <a href="/encuestas">Encuestas</a>
+</footer>
+
+<script type="module" src="/privado.js"></script>
+
+<script>
+  var t = document.getElementById("navToggle");
+  if(t) t.addEventListener("click", function() {
+    document.getElementById("navLinks").classList.toggle("open");
+  });
+</script>
+</body>
+</html>

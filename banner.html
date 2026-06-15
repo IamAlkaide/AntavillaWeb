@@ -1,0 +1,105 @@
+<!-- 
+  BANNER AFA ANTAVILLA
+  Incluir en cada página sustituyendo el bloque <header class="hero logo-hero">
+  Necesitas tener en /img/ los ficheros:
+    - LogoAntavilla.jpg  (logo APA)
+    - LogoSEI.png        (logo Colegios SEI)
+-->
+<style>
+.banner-afa {
+  width: 100%;
+  background: white;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  flex-direction: column;
+}
+.banner-afa-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  gap: 16px;
+}
+.banner-logo-apa {
+  height: 120px;
+  width: auto;
+  flex-shrink: 0;
+}
+.banner-center {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+.banner-center h1 {
+  margin: 0;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #003f88;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+.banner-center .banner-sub {
+  margin: 0;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  letter-spacing: 0.4px;
+}
+.banner-center .banner-loc {
+  margin: 0;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #999;
+}
+.banner-sep {
+  width: 56px;
+  height: 2px;
+  background: #e6a800;
+  border-radius: 2px;
+  margin: 5px 0;
+}
+.banner-logo-sei {
+  height: 80px;
+  width: auto;
+  flex-shrink: 0;
+}
+.banner-stripe-gold { background: #e6a800; height: 4px; }
+.banner-stripe-blue { background: #003f88; height: 4px; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .banner-afa-inner { padding: 12px 16px; gap: 10px; }
+  .banner-logo-apa  { height: 80px; }
+  .banner-logo-sei  { height: 54px; }
+  .banner-center h1 { font-size: 18px; }
+  .banner-center .banner-sub { font-size: 11px; }
+  .banner-center .banner-loc { font-size: 10px; }
+}
+@media (max-width: 400px) {
+  .banner-logo-sei { display: none; }
+  .banner-logo-apa { height: 70px; }
+  .banner-center h1 { font-size: 16px; }
+}
+</style>
+
+<header class="banner-afa">
+  <div class="banner-afa-inner">
+    <img class="banner-logo-apa" src="/img/LogoAntavilla.jpg" alt="Logo AFA Antavilla">
+    <div class="banner-center">
+      <h1>AFA Antavilla</h1>
+      <div class="banner-sep"></div>
+      <p class="banner-sub">Asociación de Familias de Alumnos</p>
+      <p class="banner-loc">SEI Antavilla · Villanueva del Pardillo</p>
+    </div>
+    <img class="banner-logo-sei" src="/img/LogoSEI.png" alt="Logo Colegios SEI">
+  </div>
+  <div class="banner-stripe-gold"></div>
+  <div class="banner-stripe-blue"></div>
+</header>

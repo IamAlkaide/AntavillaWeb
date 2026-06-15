@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Encuestas - AFA Antavilla</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .encuestas-intro {
+      background: linear-gradient(135deg, #005bbb, #0077ee);
+      color: white;
+      border-radius: 14px;
+      padding: 30px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .encuestas-intro h3 {
+      font-size: 22px;
+      margin: 0 0 10px 0;
+    }
+    .encuestas-intro p {
+      font-size: 16px;
+      margin: 0;
+      opacity: 0.92;
+      line-height: 1.6;
+    }
+    .encuesta-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #e8e8e8;
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .encuesta-card h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #111;
+    }
+    .encuesta-card p {
+      margin: 0;
+      color: #555;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .encuesta-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .encuesta-fecha {
+      font-size: 13px;
+      color: #888;
+    }
+    .encuesta-estado {
+      font-size: 12px;
+      font-weight: bold;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .estado-activa {
+      background: #e6f4ea;
+      color: #2e7d32;
+    }
+    .estado-proxima {
+      background: #fff3e0;
+      color: #e65100;
+    }
+    .estado-cerrada {
+      background: #f0f0f0;
+      color: #888;
+    }
+    .btn-encuesta {
+      display: inline-block;
+      margin-top: 8px;
+      background: #005bbb;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: bold;
+      width: fit-content;
+      transition: background .15s;
+    }
+    .btn-encuesta:hover {
+      background: #004a9a;
+    }
+    .btn-encuesta.disabled {
+      background: #bbb;
+      pointer-events: none;
+      cursor: default;
+    }
+    .empty-state {
+      text-align: center;
+      color: #888;
+      padding: 40px 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="nav-logo">
+    <a href="/index.html">APA Antavilla</a>
+  </div>
+  <button class="nav-toggle" id="navToggle" aria-label="Menú"><span></span><span></span><span></span></button>
+  <div class="nav-links" id="navLinks">
+    <a href="/">Inicio</a>
+    <a href="/noticias">Noticias</a>
+    <a href="/eventos">Eventos</a>
+    <a href="/socios">Socios</a>
+    <a href="/conocenos">Conócenos</a>
+  </div>
+</nav>
+
+<header class="banner-afa">
+  <div class="banner-afa-inner">
+    <img class="banner-logo-apa" src="/img/LogoAntavilla.jpg" alt="Logo AFA Antavilla">
+    <div class="banner-center">
+      <h1>AFA Antavilla</h1>
+      <div class="banner-sep"></div>
+      <p class="banner-sub">Asociación de Familias de Alumnos</p>
+      <p class="banner-loc">SEI Antavilla · Villanueva del Pardillo</p>
+    </div>
+    <img class="banner-logo-sei" src="/img/LogoSEI.png" alt="Logo Colegios SEI">
+  </div>
+  <div class="banner-stripe-gold"></div>
+  <div class="banner-stripe-blue"></div>
+</header>
+
+<section class="section">
+
+  <h2>Encuestas</h2>
+
+  <div class="encuestas-intro">
+    <h3>📋 Tu opinión construye el cole</h3>
+    <p>
+      En la AFA creemos que cada familia tiene algo valioso que aportar. Con estas encuestas queremos
+      conocer vuestras inquietudes, prioridades y propuestas para tomar mejores decisiones juntos.
+      Solo os llevará unos minutos y marca la diferencia. <strong>¡Participad!</strong>
+    </p>
+  </div>
+
+  <div id="listaEncuestas" class="news-container"></div>
+
+</section>
+
+<footer class="footer">
+  <a href="/conocenos">Conócenos</a>
+  <a href="https://chat.whatsapp.com/EoKCLMT5dkZL4YMehx7mqn">WhatsApp</a>
+  <a href="/encuestas">Encuestas</a>
+</footer>
+
+<script type="module" src="/encuestas.js"></script>
+
+<script>
+  var t = document.getElementById("navToggle");
+  if(t) t.addEventListener("click", function() {
+    document.getElementById("navLinks").classList.toggle("open");
+  });
+</script>
+</body>
+</html>

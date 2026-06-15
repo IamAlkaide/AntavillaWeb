@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Newsletter - AFA Antavilla</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #005bbb;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    .seccion-intro {
+      background: linear-gradient(135deg, #005bbb, #0077ee);
+      color: white;
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+    .seccion-intro h2 { margin: 0 0 8px 0; font-size: 24px; }
+    .seccion-intro p  { margin: 0; opacity: 0.9; font-size: 15px; line-height: 1.6; }
+
+    .newsletter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+    }
+    .newsletter-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #e8e8e8;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .newsletter-card .icono {
+      font-size: 36px;
+      line-height: 1;
+    }
+    .newsletter-card h3 {
+      margin: 0;
+      font-size: 17px;
+      color: #111;
+      line-height: 1.3;
+    }
+    .newsletter-card .meta {
+      font-size: 13px;
+      color: #888;
+    }
+    .newsletter-card p {
+      margin: 0;
+      font-size: 14px;
+      color: #555;
+      line-height: 1.5;
+      flex: 1;
+    }
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .btn-ver {
+      flex: 1;
+      text-align: center;
+      background: #005bbb;
+      color: white;
+      padding: 9px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .btn-ver:hover { background: #004a9a; }
+    .btn-descargar {
+      flex: 1;
+      text-align: center;
+      background: white;
+      color: #005bbb;
+      border: 1px solid #005bbb;
+      padding: 9px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .btn-descargar:hover { background: #f0f6ff; }
+    .empty-state {
+      text-align: center;
+      color: #888;
+      padding: 50px 20px;
+      font-size: 16px;
+      grid-column: 1 / -1;
+    }
+    .cargando {
+      text-align: center;
+      color: #888;
+      padding: 50px 20px;
+      font-size: 15px;
+      grid-column: 1 / -1;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-logo">AFA Antavilla</div>
+  <button class="nav-toggle" id="navToggle" aria-label="Menú"><span></span><span></span><span></span></button>
+  <div class="nav-links" id="navLinks">
+    <a href="/">Inicio</a>
+    <a href="/noticias">Noticias</a>
+    <a href="/eventos">Eventos</a>
+    <a href="/socios">Socios</a>
+    <a href="/conocenos">Conócenos</a>
+  </div>
+</nav>
+
+<header class="banner-afa">
+  <div class="banner-afa-inner">
+    <img class="banner-logo-apa" src="/img/LogoAntavilla.jpg" alt="Logo AFA Antavilla">
+    <div class="banner-center">
+      <h1>AFA Antavilla</h1>
+      <div class="banner-sep"></div>
+      <p class="banner-sub">Asociación de Familias de Alumnos</p>
+      <p class="banner-loc">SEI Antavilla · Villanueva del Pardillo</p>
+    </div>
+    <img class="banner-logo-sei" src="/img/LogoSEI.png" alt="Logo Colegios SEI">
+  </div>
+  <div class="banner-stripe-gold"></div>
+  <div class="banner-stripe-blue"></div>
+</header>
+
+<section class="section">
+
+  <a href="/privado.html" class="back-link">← Volver al área de socios</a>
+
+  <div class="seccion-intro">
+    <h2>📰 Newsletter AFA Antavilla</h2>
+    <p>Aquí encontrarás todas las newsletters publicadas por la AFA.<br>
+    Puedes visualizarlas directamente o descargarlas en PDF.</p>
+  </div>
+
+  <div class="newsletter-grid" id="listaNewsletter">
+    <div class="cargando">⏳ Cargando newsletters...</div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <a href="/conocenos">Conócenos</a>
+  <a href="https://chat.whatsapp.com/EoKCLMT5dkZL4YMehx7mqn">WhatsApp</a>
+  <a href="/encuestas">Encuestas</a>
+</footer>
+
+<script type="module" src="/privado-newsletter.js"></script>
+
+<script>
+  var t = document.getElementById("navToggle");
+  if(t) t.addEventListener("click", function() {
+    document.getElementById("navLinks").classList.toggle("open");
+  });
+</script>
+</body>
+</html>
