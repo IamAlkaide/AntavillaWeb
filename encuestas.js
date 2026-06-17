@@ -1,6 +1,11 @@
 import { db } from "/app.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// Comprobación de sesión — solo socios logueados
+if (!localStorage.getItem("socioActivo") || localStorage.getItem("socioActivo") !== "true") {
+  window.location.href = "/socios.html";
+}
+
 const contenedor = document.getElementById("listaEncuestas");
 
 async function cargarEncuestas() {

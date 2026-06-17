@@ -8,6 +8,7 @@
     .auth-wrap {
       max-width: 420px;
       margin: 40px auto;
+      position: relative;
     }
     .auth-tabs {
       display: flex;
@@ -106,27 +107,92 @@
       font-size: 14px;
     }
     .msg-ok.visible { display: block; }
-    .link-olvide {
-      color: #005bbb;
-      font-size: 13px;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .link-olvide:hover { text-decoration: underline; }
     .panel { display: none; }
     .panel.active { display: block; }
+
+    /* ── BOTÓN AYUDA ─────────────────────────────────── */
+    .btn-ayuda {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin: 0 auto 14px;
+      background: #fff3e0;
+      color: #e65100;
+      border: 1px solid #f0c060;
+      border-radius: 20px;
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      width: fit-content;
+      transition: background .15s;
+    }
+    .btn-ayuda:hover { background: #ffe6c2; }
+
+    /* ── MODAL AYUDA ─────────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-ayuda-content {
+      background: white;
+      border-radius: 12px;
+      padding: 28px 26px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      text-align: center;
+      position: relative;
+    }
+    .modal-ayuda-content h3 {
+      margin: 0 0 14px 0;
+      font-size: 19px;
+      color: #111;
+    }
+    .modal-ayuda-content p {
+      margin: 0 0 18px 0;
+      color: #444;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .modal-ayuda-content a {
+      color: #005bbb;
+      font-weight: bold;
+    }
+    .btn-cerrar-ayuda {
+      background: #005bbb;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-cerrar-ayuda:hover { background: #004a9a; }
   </style>
 </head>
 <body>
 
 <nav class="navbar">
-  <div class="nav-logo">AFA Antavilla</div>
+      <div class="nav-logo">
+    <a href="/index.html">APA Antavilla</a>
+  </div>
   <button class="nav-toggle" id="navToggle" aria-label="Menú"><span></span><span></span><span></span></button>
   <div class="nav-links" id="navLinks">
     <a href="/">Inicio</a>
     <a href="/noticias">Noticias</a>
     <a href="/eventos">Eventos</a>
     <a href="/socios">Socios</a>
+    <a href="/encuestas">Encuestas</a>
     <a href="/conocenos">Conócenos</a>
   </div>
 </nav>
@@ -149,6 +215,8 @@
 <section class="section">
   <div class="auth-wrap">
 
+    <button class="btn-ayuda" id="btnAyuda">❓ ¿Necesitas ayuda?</button>
+
     <div class="auth-tabs">
       <button class="auth-tab active" id="tabLogin" onclick="mostrarPanel('login')">🔐 Acceder</button>
       <button class="auth-tab" id="tabRegistro" onclick="mostrarPanel('registro')">📋 Registrarse</button>
@@ -170,43 +238,14 @@
             <input id="loginPassword" type="password" placeholder="••••••••" class="input" autocomplete="current-password">
           </div>
           <button class="btn-primary" id="btnLogin">Entrar</button>
-          <p style="text-align:center; margin:4px 0 0 0;">
-            <a href="#" class="link-olvide" onclick="mostrarPanel('reset'); return false;">¿Olvidaste tu contraseña?</a>
-          </p>
         </div>
         <p id="loginError" class="msg-error"></p>
-      </div>
-
-      <!-- PANEL RESET -->
-      <div id="panelReset" class="panel">
-        <h2>Restablecer contraseña</h2>
-        <p class="subtitulo">Introduce tu email y tu nueva contraseña.</p>
-        <div class="input-group">
-          <div>
-            <label class="input-label">Email</label>
-            <input id="resetEmail" type="email" placeholder="tu@email.com" class="input" autocomplete="email">
-          </div>
-          <div>
-            <label class="input-label">Nueva contraseña (mínimo 6 caracteres)</label>
-            <input id="resetPassword" type="password" placeholder="••••••••" class="input">
-          </div>
-          <div>
-            <label class="input-label">Repetir nueva contraseña</label>
-            <input id="resetPassword2" type="password" placeholder="••••••••" class="input">
-          </div>
-          <button class="btn-primary" id="btnReset">Cambiar contraseña</button>
-          <p style="text-align:center; margin:4px 0 0 0;">
-            <a href="#" class="link-olvide" onclick="mostrarPanel('login'); return false;">← Volver al inicio de sesión</a>
-          </p>
-        </div>
-        <p id="resetError" class="msg-error"></p>
-        <p id="resetOk" class="msg-ok"></p>
       </div>
 
       <!-- PANEL REGISTRO -->
       <div id="panelRegistro" class="panel">
         <h2>Crear acceso</h2>
-        <p class="subtitulo">Solo para socios activos. Necesitas tu email de socio para registrarte.</p>
+        <p class="subtitulo">Solo para socios activos. Necesitas tu número de socio para registrarte.</p>
         <div class="input-group">
           <div>
             <label class="input-label">Email (el mismo que está en tu ficha de socio)</label>
@@ -230,6 +269,20 @@
   </div>
 </section>
 
+<!-- MODAL AYUDA -->
+<div class="modal-overlay" id="modalAyuda">
+  <div class="modal-ayuda-content">
+    <h3>❓ ¿Necesitas ayuda?</h3>
+    <p>
+      Para cualquier duda o problema relacionado con el registro de socios,
+      ponte en contacto con la AFA Antavilla a través del correo
+      <a href="mailto:apa@colegioseiantavilla.com">apa@colegioseiantavilla.com</a>
+      o contactando con cualquiera de sus miembros.
+    </p>
+    <button class="btn-cerrar-ayuda" id="btnCerrarAyuda">Entendido</button>
+  </div>
+</div>
+
 <footer class="footer">
   <a href="/conocenos">Conócenos</a>
   <a href="https://chat.whatsapp.com/EoKCLMT5dkZL4YMehx7mqn">WhatsApp</a>
@@ -240,10 +293,21 @@
   function mostrarPanel(cual) {
     document.getElementById("panelLogin").classList.toggle("active", cual === "login");
     document.getElementById("panelRegistro").classList.toggle("active", cual === "registro");
-    document.getElementById("panelReset").classList.toggle("active", cual === "reset");
     document.getElementById("tabLogin").classList.toggle("active", cual === "login");
     document.getElementById("tabRegistro").classList.toggle("active", cual === "registro");
   }
+
+  // Modal de ayuda
+  const modalAyuda = document.getElementById("modalAyuda");
+  document.getElementById("btnAyuda").addEventListener("click", () => {
+    modalAyuda.classList.add("active");
+  });
+  document.getElementById("btnCerrarAyuda").addEventListener("click", () => {
+    modalAyuda.classList.remove("active");
+  });
+  modalAyuda.addEventListener("click", (e) => {
+    if (e.target === modalAyuda) modalAyuda.classList.remove("active");
+  });
 </script>
 <script type="module" src="/socios.js"></script>
 
