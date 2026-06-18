@@ -241,14 +241,34 @@ body {
 .footer {
   background: #003f88;
   color: white;
-  padding: 20px 16px;
+  padding: 20px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 40px;
+  font-size: 14px;
+}
+.footer-top {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: 16px 28px;
-  margin-top: 40px;
-  font-size: 14px;
 }
+.footer-legal {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  padding-top: 10px;
+  width: 100%;
+}
+.footer-legal a {
+  font-size: 12px;
+  opacity: 0.75;
+}
+.footer-legal a:hover { opacity: 1; }
 .footer a { color: white; text-decoration: none; font-weight: 500; }
 .footer a:hover { text-decoration: underline; }
 

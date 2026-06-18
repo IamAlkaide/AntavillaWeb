@@ -148,18 +148,9 @@
       box-shadow: 0 10px 40px rgba(0,0,0,0.2);
       text-align: center;
     }
-    .modal-ayuda-content h3 {
-      margin: 0 0 12px 0;
-      font-size: 20px;
-      color: #111;
-    }
-    .modal-ayuda-content p {
-      color: #555;
-      font-size: 15px;
-      line-height: 1.6;
-      margin: 0 0 20px 0;
-    }
-    .modal-ayuda-content a {
+    .modal-ayuda-content h3 { margin: 0 0 12px 0; font-size: 20px; color: #111; }
+    .modal-ayuda-content p  { color: #555; font-size: 15px; line-height: 1.6; margin: 0 0 20px 0; }
+    .modal-ayuda-content a  {
       display: inline-block;
       background: #005bbb;
       color: white;
@@ -272,7 +263,7 @@
       <!-- PANEL REGISTRO -->
       <div id="panelRegistro" class="panel">
         <h2>Crear acceso</h2>
-        <p class="subtitulo">Solo para socios activos. Necesitas tu número de socio para registrarte.</p>
+        <p class="subtitulo">Solo para socios activos. Necesitas tu email de socio para registrarte.</p>
         <div class="input-group">
           <div>
             <label class="input-label">Email (el mismo que está en tu ficha de socio)</label>
@@ -316,20 +307,27 @@
       </div>
 
     </div>
-
-    <!-- AVISO: HAZTE SOCIO -->
+	<!-- AVISO: HAZTE SOCIO -->
     <div class="alta-socio-banner">
       <p>¿Aún no eres socio del AFA?<br>Apúntate aquí para colaborar con el AFA y estar informado de todo lo que ocurre.</p>
       <a class="btn-alta-socio" href="https://docs.google.com/forms/d/e/1FAIpQLSf2KhcuXhOlq9G68fq2LDTSUiIXIRUY2q6Tquk9b8aaxDkeOQ/viewform" target="_blank">📋 Hazte socio</a>
     </div>
-
+	
   </div>
 </section>
 
 <footer class="footer">
-  <a href="/conocenos">Conócenos</a>
-  <a href="https://chat.whatsapp.com/EoKCLMT5dkZL4YMehx7mqn">WhatsApp</a>
-  <a href="/encuestas">Encuestas</a>
+  <div class="footer-top">
+    <a href="/conocenos">Conócenos</a>
+    <a href="https://chat.whatsapp.com/EoKCLMT5dkZL4YMehx7mqn">WhatsApp</a>
+    <a href="/encuestas">Encuestas</a>
+  </div>
+  <div class="footer-legal">
+    <a href="/aviso-legal.html">Aviso Legal</a>
+    <a href="/politica-privacidad.html">Política de Privacidad</a>
+    <a href="/politica-cookies.html">Política de Cookies</a>
+    <a href="/proteccion-datos.html">Protección de Datos</a>
+  </div>
 </footer>
 
 <script>
@@ -359,11 +357,8 @@
 <div class="modal-ayuda" id="modalAyuda">
   <div class="modal-ayuda-content">
     <h3>¿Necesitas ayuda?</h3>
-    <p>
-      Si tienes problemas para acceder o registrarte, escríbenos y te ayudamos lo antes posible.
-    </p>
-    <a href="mailto:apa@colegioseiantavilla.com">✉️ apa@colegioseiantavilla.com</a>
-    <br>
+    <p>Si tienes problemas para acceder o registrarte, escríbenos y te ayudamos lo antes posible.</p>
+    <a href="mailto:apa@colegioseiantavilla.com">✉️ apa@colegioseiantavilla.com</a><br>
     <button class="btn-cerrar-ayuda" onclick="document.getElementById('modalAyuda').classList.remove('active')">Cerrar</button>
   </div>
 </div>
