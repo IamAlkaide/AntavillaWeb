@@ -8,7 +8,6 @@
     .auth-wrap {
       max-width: 420px;
       margin: 40px auto;
-      position: relative;
     }
     .auth-tabs {
       display: flex;
@@ -110,89 +109,118 @@
     .panel { display: none; }
     .panel.active { display: block; }
 
-    /* ── BOTÓN AYUDA ─────────────────────────────────── */
+    /* Botón ayuda flotante */
     .btn-ayuda {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin: 0 auto 14px;
-      background: #fff3e0;
-      color: #e65100;
-      border: 1px solid #f0c060;
-      border-radius: 20px;
-      padding: 8px 18px;
-      font-size: 14px;
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #e6a800;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 20px;
+      font-size: 15px;
       font-weight: bold;
       cursor: pointer;
-      width: fit-content;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+      z-index: 999;
       transition: background .15s;
     }
-    .btn-ayuda:hover { background: #ffe6c2; }
+    .btn-ayuda:hover { background: #cc9400; }
 
-    /* ── MODAL AYUDA ─────────────────────────────────── */
-    .modal-overlay {
+    /* Modal ayuda */
+    .modal-ayuda {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0,0,0,0.45);
       z-index: 2000;
       justify-content: center;
       align-items: center;
-      padding: 20px;
     }
-    .modal-overlay.active { display: flex; }
+    .modal-ayuda.active { display: flex; }
     .modal-ayuda-content {
       background: white;
-      border-radius: 12px;
-      padding: 28px 26px;
-      max-width: 420px;
-      width: 100%;
+      border-radius: 14px;
+      padding: 32px 28px;
+      max-width: 380px;
+      width: 90%;
       box-shadow: 0 10px 40px rgba(0,0,0,0.2);
       text-align: center;
-      position: relative;
     }
     .modal-ayuda-content h3 {
-      margin: 0 0 14px 0;
-      font-size: 19px;
+      margin: 0 0 12px 0;
+      font-size: 20px;
       color: #111;
     }
     .modal-ayuda-content p {
-      margin: 0 0 18px 0;
-      color: #444;
+      color: #555;
       font-size: 15px;
       line-height: 1.6;
+      margin: 0 0 20px 0;
     }
     .modal-ayuda-content a {
-      color: #005bbb;
-      font-weight: bold;
-    }
-    .btn-cerrar-ayuda {
+      display: inline-block;
       background: #005bbb;
       color: white;
-      border: none;
-      padding: 10px 24px;
+      padding: 11px 22px;
       border-radius: 8px;
-      font-size: 14px;
+      text-decoration: none;
       font-weight: bold;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+    .modal-ayuda-content a:hover { background: #004a9a; }
+    .btn-cerrar-ayuda {
+      display: block;
+      margin: 8px auto 0;
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 14px;
       cursor: pointer;
     }
-    .btn-cerrar-ayuda:hover { background: #004a9a; }
+    .btn-cerrar-ayuda:hover { color: #333; }
+
+    /* Aviso "hazte socio" */
+    .alta-socio-banner {
+      margin-top: 20px;
+      background: linear-gradient(135deg, #fff8e1, #fff3cd);
+      border: 1px solid #f0d060;
+      border-radius: 12px;
+      padding: 18px 20px;
+      text-align: center;
+    }
+    .alta-socio-banner p {
+      margin: 0 0 12px 0;
+      font-size: 15px;
+      color: #5a4500;
+      line-height: 1.5;
+    }
+    .btn-alta-socio {
+      display: inline-block;
+      background: #e6a800;
+      color: white;
+      padding: 11px 22px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 15px;
+      transition: background .15s;
+    }
+    .btn-alta-socio:hover { background: #cc9400; }
   </style>
 </head>
 <body>
 
 <nav class="navbar">
-      <div class="nav-logo">
-    <a href="/index.html">APA Antavilla</a>
-  </div>
+  <div class="nav-logo">AFA Antavilla</div>
   <button class="nav-toggle" id="navToggle" aria-label="Menú"><span></span><span></span><span></span></button>
   <div class="nav-links" id="navLinks">
     <a href="/">Inicio</a>
     <a href="/noticias">Noticias</a>
     <a href="/eventos">Eventos</a>
     <a href="/socios">Socios</a>
-    <a href="/encuestas">Encuestas</a>
     <a href="/conocenos">Conócenos</a>
   </div>
 </nav>
@@ -215,11 +243,10 @@
 <section class="section">
   <div class="auth-wrap">
 
-    <button class="btn-ayuda" id="btnAyuda">❓ ¿Necesitas ayuda?</button>
-
     <div class="auth-tabs">
       <button class="auth-tab active" id="tabLogin" onclick="mostrarPanel('login')">🔐 Acceder</button>
       <button class="auth-tab" id="tabRegistro" onclick="mostrarPanel('registro')">📋 Registrarse</button>
+      <button class="auth-tab" id="tabReset" onclick="mostrarPanel('reset')">🔑 Contraseña</button>
     </div>
 
     <div class="auth-card">
@@ -265,23 +292,39 @@
         <p id="registroOk" class="msg-ok"></p>
       </div>
 
+      <!-- PANEL RESET CONTRASEÑA -->
+      <div id="panelReset" class="panel">
+        <h2>Cambiar contraseña</h2>
+        <p class="subtitulo">Introduce tu email de socio y elige una nueva contraseña.</p>
+        <div class="input-group">
+          <div>
+            <label class="input-label">Email (el mismo que está en tu ficha de socio)</label>
+            <input id="resetEmail" type="email" placeholder="tu@email.com" class="input" autocomplete="email">
+          </div>
+          <div>
+            <label class="input-label">Nueva contraseña (mínimo 6 caracteres)</label>
+            <input id="resetPassword" type="password" placeholder="••••••••" class="input" autocomplete="new-password">
+          </div>
+          <div>
+            <label class="input-label">Repetir nueva contraseña</label>
+            <input id="resetPassword2" type="password" placeholder="••••••••" class="input" autocomplete="new-password">
+          </div>
+          <button class="btn-primary" id="btnReset">Cambiar contraseña</button>
+        </div>
+        <p id="resetError" class="msg-error"></p>
+        <p id="resetOk" class="msg-ok"></p>
+      </div>
+
     </div>
+
+    <!-- AVISO: HAZTE SOCIO -->
+    <div class="alta-socio-banner">
+      <p>¿Aún no eres socio del AFA?<br>Apúntate aquí para colaborar con el AFA y estar informado de todo lo que ocurre.</p>
+      <a class="btn-alta-socio" href="https://docs.google.com/forms/d/e/1FAIpQLSf2KhcuXhOlq9G68fq2LDTSUiIXIRUY2q6Tquk9b8aaxDkeOQ/viewform" target="_blank">📋 Hazte socio</a>
+    </div>
+
   </div>
 </section>
-
-<!-- MODAL AYUDA -->
-<div class="modal-overlay" id="modalAyuda">
-  <div class="modal-ayuda-content">
-    <h3>❓ ¿Necesitas ayuda?</h3>
-    <p>
-      Para cualquier duda o problema relacionado con el registro de socios,
-      ponte en contacto con la AFA Antavilla a través del correo
-      <a href="mailto:apa@colegioseiantavilla.com">apa@colegioseiantavilla.com</a>
-      o contactando con cualquiera de sus miembros.
-    </p>
-    <button class="btn-cerrar-ayuda" id="btnCerrarAyuda">Entendido</button>
-  </div>
-</div>
 
 <footer class="footer">
   <a href="/conocenos">Conócenos</a>
@@ -291,23 +334,13 @@
 
 <script>
   function mostrarPanel(cual) {
-    document.getElementById("panelLogin").classList.toggle("active", cual === "login");
-    document.getElementById("panelRegistro").classList.toggle("active", cual === "registro");
-    document.getElementById("tabLogin").classList.toggle("active", cual === "login");
-    document.getElementById("tabRegistro").classList.toggle("active", cual === "registro");
+    ["login","registro","reset"].forEach(p => {
+      document.getElementById("panel" + p.charAt(0).toUpperCase() + p.slice(1))
+        .classList.toggle("active", p === cual);
+      document.getElementById("tab" + p.charAt(0).toUpperCase() + p.slice(1))
+        .classList.toggle("active", p === cual);
+    });
   }
-
-  // Modal de ayuda
-  const modalAyuda = document.getElementById("modalAyuda");
-  document.getElementById("btnAyuda").addEventListener("click", () => {
-    modalAyuda.classList.add("active");
-  });
-  document.getElementById("btnCerrarAyuda").addEventListener("click", () => {
-    modalAyuda.classList.remove("active");
-  });
-  modalAyuda.addEventListener("click", (e) => {
-    if (e.target === modalAyuda) modalAyuda.classList.remove("active");
-  });
 </script>
 <script type="module" src="/socios.js"></script>
 
@@ -317,5 +350,23 @@
     document.getElementById("navLinks").classList.toggle("open");
   });
 </script>
+<!-- BOTÓN AYUDA FLOTANTE -->
+<button class="btn-ayuda" onclick="document.getElementById('modalAyuda').classList.add('active')">
+  ❓ ¿Necesitas ayuda?
+</button>
+
+<!-- MODAL AYUDA -->
+<div class="modal-ayuda" id="modalAyuda">
+  <div class="modal-ayuda-content">
+    <h3>¿Necesitas ayuda?</h3>
+    <p>
+      Si tienes problemas para acceder o registrarte, escríbenos y te ayudamos lo antes posible.
+    </p>
+    <a href="mailto:apa@colegioseiantavilla.com">✉️ apa@colegioseiantavilla.com</a>
+    <br>
+    <button class="btn-cerrar-ayuda" onclick="document.getElementById('modalAyuda').classList.remove('active')">Cerrar</button>
+  </div>
+</div>
+
 </body>
 </html>
