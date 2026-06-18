@@ -125,6 +125,9 @@
       width: fit-content;
     }
     .tag-activo   { background: #e6f4ea; color: #2e7d32; }
+    .tag-admin   { background: #fce4ec; color: #b71c1c; }
+    .seccion-card.admin-card .seccion-img { background: #fff3e0; }
+
     .tag-pronto   { background: #fff3e0; color: #e65100; }
   </style>
 </head>
@@ -212,22 +215,24 @@
       </div>
     </a>
 
+
+    <a href="/junta.html" class="seccion-card admin-card" id="cardJunta" style="display:none;">
+      <div class="seccion-img">🏛️</div>
+      <div class="seccion-body">
+        <h3>Acceso Junta Directiva</h3>
+        <p>Gestión de socios, altas, bajas y datos de las familias del centro.</p>
+        <span class="seccion-tag tag-admin">🔐 Solo Junta</span>
+      </div>
+    </a>
+
   </div>
 
 </section>
 
 <footer class="footer">
-  <div class="footer-top">
-    <a href="/conocenos">Conócenos</a>
-    <a href="https://chat.whatsapp.com/EoKCLMT5dkZL4YMehx7mqn">WhatsApp</a>
-    <a href="/encuestas">Encuestas</a>
-  </div>
-  <div class="footer-legal">
-    <a href="/aviso-legal.html">Aviso Legal</a>
-    <a href="/politica-privacidad.html">Política de Privacidad</a>
-    <a href="/politica-cookies.html">Política de Cookies</a>
-    <a href="/proteccion-datos.html">Protección de Datos</a>
-  </div>
+  <a href="/conocenos">Conócenos</a>
+  <a href="https://chat.whatsapp.com/EoKCLMT5dkZL4YMehx7mqn">WhatsApp</a>
+  <a href="/encuestas">Encuestas</a>
 </footer>
 
 <script type="module" src="/privado.js"></script>
