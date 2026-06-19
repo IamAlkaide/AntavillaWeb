@@ -106,8 +106,9 @@
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.07);
       margin-bottom: 20px;
+      width: 100%;
     }
-    table { width: 100%; border-collapse: collapse; background: white; font-size: 13px; }
+    table { width: 100%; min-width: 920px; border-collapse: collapse; background: white; font-size: 13px; }
     thead th {
       background: #7b1fa2;
       color: white;
@@ -123,7 +124,20 @@
     .badge-inactivo { background: #fdecea; color: #c62828; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
     .badge-cuota-ok  { background: #e3f2fd; color: #1565c0; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
     .badge-cuota-no  { background: #fff3e0; color: #e65100; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
-    .btn-edit { background: none; border: 1px solid #7b1fa2; color: #7b1fa2; border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; font-family: 'Manrope', sans-serif; }
+    .btn-edit { background: none; border: 1px solid #7b1fa2; color: #7b1fa2; border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; font-family: 'Manrope', sans-serif; white-space: nowrap; }
+    .col-acciones {
+      min-width: 90px;
+      position: sticky;
+      right: 0;
+      background: #7b1fa2;
+      box-shadow: -4px 0 6px -2px rgba(0,0,0,0.15);
+    }
+    td.col-acciones {
+      background: white;
+      box-shadow: -4px 0 6px -2px rgba(0,0,0,0.1);
+    }
+    tbody tr:nth-child(even) td.col-acciones { background: #faf5ff; }
+    tbody tr:hover td.col-acciones { background: #f3e5f5; }
     .btn-edit:hover { background: #f3e5f5; }
     .contador { font-size: 13px; color: #888; margin-bottom: 8px; }
 
@@ -332,7 +346,7 @@
           <th>Estado</th>
           <th>Cuota</th>
           <th>Hijos</th>
-          <th>Acciones</th>
+          <th class="col-acciones">Acciones</th>
         </tr>
       </thead>
       <tbody id="cuerpoTabla">

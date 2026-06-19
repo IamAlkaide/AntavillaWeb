@@ -35,6 +35,15 @@ function mostrarPopup(texto, tipo = "success") {
   setTimeout(() => { popup.className = "popup"; }, 3000);
 }
 
+// ── HELPER: contar hijos reales ──────────────────────────
+function contarHijos(s) {
+  let n = 0;
+  for (let i = 1; i <= 4; i++) {
+    if (s[`Hijo${i}`] && String(s[`Hijo${i}`]).trim() !== "") n++;
+  }
+  return n;
+}
+
 // ── CARGAR SOCIOS ───────────────────────────────────────
 async function cargarSocios() {
   try {
@@ -117,7 +126,7 @@ function renderTabla(socios) {
     const cuota     = s.cuotaPagada === true
       ? `<span class="badge-cuota-ok">✅ Pagada</span>`
       : `<span class="badge-cuota-no">⏳ Pendiente</span>`;
-    const numHijos  = Array.isArray(s.hijos) ? s.hijos.length : "—";
+    const numHijos  = contarHijos(s);
 
     return `
       <tr>
@@ -129,7 +138,7 @@ function renderTabla(socios) {
         <td>${activo}</td>
         <td>${cuota}</td>
         <td style="text-align:center;">${numHijos}</td>
-        <td><button class="btn-edit" data-docid="${s._docId}">✏️ Editar</button></td>
+        <td class="col-acciones"><button class="btn-edit" data-docid="${s._docId}">✏️ Editar</button></td>
       </tr>`;
   }).join("");
 
@@ -155,33 +164,24 @@ function abrirModal(docId) {
   document.getElementById("editCuota").value     = String(s.cuotaPagada === true);
   document.getElementById("editRol").value       = s.rol      || "socio";
 
-  renderHijos(s.hijos || []);
+  renderHijos(s);
 
   modalEdicion.classList.add("active");
 }
 
 // ── MODAL: HIJOS ─────────────────────────────────────────
-function renderHijos(hijos) {
+function renderHijos(s) {
   const wrap = document.getElementById("hijosWrap");
-  // Siempre mostramos 4 slots
   let html = "";
-  for (let i = 0; i < 4; i++) {
-    const h = hijos[i] || {};
-    const ordinal = ["Primer", "Segundo", "Tercer", "Cuarto"][i];
+  for (let i = 1; i <= 4; i++) {
+    const ordinal = ["Primer", "Segundo", "Tercer", "Cuarto"][i - 1];
+    const valor = s[`Hijo${i}`] || "";
     html += `
       <div class="hijo-row">
         <div class="hijo-titulo">${ordinal} hijo</div>
-        <div class="form-group">
-          <label>Nombre</label>
-          <input type="text" id="hijoNombre${i}" value="${h.nombre || ""}">
-        </div>
-        <div class="form-group">
-          <label>Apellidos</label>
-          <input type="text" id="hijoApellidos${i}" value="${h.apellidos || ""}">
-        </div>
-        <div class="form-group">
-          <label>Fecha nacimiento</label>
-          <input type="date" id="hijoFecha${i}" value="${h.fechaNacimiento || ""}">
+        <div class="form-group full">
+          <label>Nombre, apellidos y año de nacimiento</label>
+          <input type="text" id="hijo${i}" value="${valor}" placeholder="Ej: Gabriel Buendía Barras 2010">
         </div>
       </div>`;
   }
@@ -204,15 +204,10 @@ btnGuardar.addEventListener("click", async () => {
   btnGuardar.disabled = true;
   btnGuardar.textContent = "Guardando...";
 
-  // Recoger hijos (solo los que tienen nombre)
-  const hijos = [];
-  for (let i = 0; i < 4; i++) {
-    const nombre      = document.getElementById(`hijoNombre${i}`).value.trim();
-    const apellidos   = document.getElementById(`hijoApellidos${i}`).value.trim();
-    const fechaNac    = document.getElementById(`hijoFecha${i}`).value;
-    if (nombre) {
-      hijos.push({ nombre, apellidos, fechaNacimiento: fechaNac });
-    }
+  // Recoger hijos como campos planos Hijo1..Hijo4
+  const hijosData = {};
+  for (let i = 1; i <= 4; i++) {
+    hijosData[`Hijo${i}`] = document.getElementById(`hijo${i}`).value.trim();
   }
 
   const cambios = {
@@ -225,7 +220,7 @@ btnGuardar.addEventListener("click", async () => {
     activo:       document.getElementById("editActivo").value === "true",
     cuotaPagada:  document.getElementById("editCuota").value === "true",
     rol:          document.getElementById("editRol").value,
-    hijos,
+    ...hijosData,
   };
 
   try {

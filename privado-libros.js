@@ -336,11 +336,9 @@ async function obtenerEmailSocioActual() {
 // ========== INICIALIZACIÓN ==========
 async function init() {
   if (localStorage.getItem("socioActivo") !== "true") {
-    window.location.href = "/no-acceso.html";
+    window.location.href = "/socios.html";
     return;
   }
-
-  document.getElementById("contenidoPrivado").style.display = "block";
 
   await obtenerEmailSocioActual();
   await cargarLibros();
