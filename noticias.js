@@ -1,13 +1,18 @@
 import { db } from "/app.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-
 const contenedor = document.getElementById("listaNoticias");
 
 async function cargarNoticias() {
   const snap = await getDocs(collection(db, "noticias"));
-  snap.forEach(doc => {
-    const n = doc.data();
+  const noticias = [];
+
+  snap.forEach(doc => noticias.push(doc.data()));
+
+  // Más reciente primero
+  noticias.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+  noticias.forEach(n => {
     contenedor.innerHTML += `
       <div class="card">
         <h2>${n.titulo}</h2>

@@ -9,6 +9,7 @@ async function cargarNoticias() {
 
   snap.forEach(doc => noticias.push(doc.data()));
 
+  // Más reciente primero
   noticias.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
   noticias.forEach(n => {

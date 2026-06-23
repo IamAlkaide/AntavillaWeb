@@ -64,6 +64,29 @@
     .card-pasado .evento-info h3 {
       color: #666;
     }
+    /* Enlace calendario escolar */
+    .btn-calendario {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #005bbb;
+      color: white;
+      padding: 14px 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 24px;
+      width: fit-content;
+      transition: background .15s;
+    }
+    .btn-calendario:hover {
+      background: #004a9a;
+    }
+    .btn-calendario .icono-calendario {
+      font-size: 20px;
+      line-height: 1;
+    }
     @media (max-width: 500px) {
       .evento-card {
         flex-direction: column;
@@ -72,6 +95,10 @@
         width: 100%;
         min-width: unset;
         height: 160px;
+      }
+      .btn-calendario {
+        width: 100%;
+        justify-content: center;
       }
     }
   </style>
@@ -108,6 +135,12 @@
 </header>
 
 <section class="section">
+
+  <a class="btn-calendario" href="https://www.comunidad.madrid/docs/2026-06/calendario_escolar_2026-2027.pdf?VersionId=bbWUB4wslyIZl_eioAGxjzPywbjKvEI4" target="_blank" rel="noopener">
+    <span class="icono-calendario">📅</span>
+    Calendario escolar 2026-2027
+  </a>
+
   <h2>Próximos eventos</h2>
   <div id="eventosFuturos" class="news-container"></div>
 </section>
