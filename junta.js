@@ -1,6 +1,6 @@
 import { db } from "/app.js";
 import {
-  collection, getDocs, doc, updateDoc
+  collection, getDocs, doc, updateDoc, setDoc, getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // ── GUARD: solo admins ──────────────────────────────────
@@ -15,18 +15,21 @@ if (localStorage.getItem("esAdmin") !== "true") {
 let todosSocios   = [];   // raw de Firestore
 let sociosFiltrados = [];
 let docIdActual   = null; // docId Firestore del socio en edición
+let modoCreacion  = false; // true si el modal está en modo "nuevo socio"
 
 // ── ELEMENTOS DOM ───────────────────────────────────────
-const cuerpoTabla  = document.getElementById("cuerpoTabla");
-const contador     = document.getElementById("contador");
-const inputBuscar  = document.getElementById("inputBuscar");
-const filtroActivo = document.getElementById("filtroActivo");
-const filtroCuota  = document.getElementById("filtroCuota");
-const btnLimpiar   = document.getElementById("btnLimpiar");
-const modalEdicion = document.getElementById("modalEdicion");
-const btnCancelar  = document.getElementById("btnCancelar");
-const btnGuardar   = document.getElementById("btnGuardar");
-const popup        = document.getElementById("popup");
+const cuerpoTabla   = document.getElementById("cuerpoTabla");
+const contador      = document.getElementById("contador");
+const inputBuscar   = document.getElementById("inputBuscar");
+const filtroActivo  = document.getElementById("filtroActivo");
+const filtroCuota   = document.getElementById("filtroCuota");
+const btnLimpiar    = document.getElementById("btnLimpiar");
+const modalEdicion  = document.getElementById("modalEdicion");
+const modalTitulo   = document.getElementById("modalTitulo");
+const btnCancelar   = document.getElementById("btnCancelar");
+const btnGuardar    = document.getElementById("btnGuardar");
+const btnNuevoSocio = document.getElementById("btnNuevoSocio");
+const popup         = document.getElementById("popup");
 
 // ── POPUP ───────────────────────────────────────────────
 function mostrarPopup(texto, tipo = "success") {
@@ -42,6 +45,16 @@ function contarHijos(s) {
     if (s[`Hijo${i}`] && String(s[`Hijo${i}`]).trim() !== "") n++;
   }
   return n;
+}
+
+// ── HELPER: siguiente Nº de socio ────────────────────────
+function siguienteIdSocio() {
+  let max = 0;
+  todosSocios.forEach(s => {
+    const id = parseInt(s.IdSocio) || 0;
+    if (id > max) max = id;
+  });
+  return max + 1;
 }
 
 // ── CARGAR SOCIOS ───────────────────────────────────────
@@ -143,15 +156,18 @@ function renderTabla(socios) {
   }).join("");
 
   document.querySelectorAll(".btn-edit").forEach(btn => {
-    btn.addEventListener("click", () => abrirModal(btn.dataset.docid));
+    btn.addEventListener("click", () => abrirModalEdicion(btn.dataset.docid));
   });
 }
 
-// ── MODAL: ABRIR ─────────────────────────────────────────
-function abrirModal(docId) {
+// ── MODAL: ABRIR EN MODO EDICIÓN ─────────────────────────
+function abrirModalEdicion(docId) {
   const s = todosSocios.find(x => x._docId === docId);
   if (!s) return;
-  docIdActual = docId;
+
+  modoCreacion = false;
+  docIdActual  = docId;
+  modalTitulo.textContent = "✏️ Editar socio";
 
   document.getElementById("editIdSocio").value   = s.IdSocio  || "";
   document.getElementById("editNombre").value    = s.nombre   || "";
@@ -165,6 +181,28 @@ function abrirModal(docId) {
   document.getElementById("editRol").value       = s.rol      || "socio";
 
   renderHijos(s);
+
+  modalEdicion.classList.add("active");
+}
+
+// ── MODAL: ABRIR EN MODO CREACIÓN ────────────────────────
+function abrirModalNuevo() {
+  modoCreacion = true;
+  docIdActual  = null;
+  modalTitulo.textContent = "➕ Nuevo socio";
+
+  document.getElementById("editIdSocio").value   = siguienteIdSocio();
+  document.getElementById("editNombre").value    = "";
+  document.getElementById("editApellido1").value = "";
+  document.getElementById("editApellido2").value = "";
+  document.getElementById("editMail").value      = "";
+  document.getElementById("editTelefono").value  = "";
+  document.getElementById("editNif").value       = "";
+  document.getElementById("editActivo").value    = "true";
+  document.getElementById("editCuota").value     = "false";
+  document.getElementById("editRol").value       = "socio";
+
+  renderHijos({});
 
   modalEdicion.classList.add("active");
 }
@@ -191,15 +229,33 @@ function renderHijos(s) {
 // ── MODAL: CERRAR ─────────────────────────────────────────
 function cerrarModal() {
   modalEdicion.classList.remove("active");
-  docIdActual = null;
+  docIdActual  = null;
+  modoCreacion = false;
 }
 
 btnCancelar.addEventListener("click", cerrarModal);
 modalEdicion.addEventListener("click", e => { if (e.target === modalEdicion) cerrarModal(); });
+btnNuevoSocio.addEventListener("click", abrirModalNuevo);
 
 // ── MODAL: GUARDAR ────────────────────────────────────────
 btnGuardar.addEventListener("click", async () => {
-  if (!docIdActual) return;
+  if (!modoCreacion && !docIdActual) return;
+
+  const nombre    = document.getElementById("editNombre").value.trim();
+  const apellido1 = document.getElementById("editApellido1").value.trim();
+  const mail      = document.getElementById("editMail").value.trim();
+  const hijo1     = document.getElementById("hijo1").value.trim();
+
+  if (modoCreacion) {
+    if (!nombre || !apellido1 || !mail || !hijo1) {
+      mostrarPopup("❌ Nombre, primer apellido, email e Hijo1 son obligatorios", "error");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
+      mostrarPopup("❌ El email no es válido", "error");
+      return;
+    }
+  }
 
   btnGuardar.disabled = true;
   btnGuardar.textContent = "Guardando...";
@@ -211,8 +267,8 @@ btnGuardar.addEventListener("click", async () => {
   }
 
   const cambios = {
-    nombre:       document.getElementById("editNombre").value.trim(),
-    Apellido1:    document.getElementById("editApellido1").value.trim(),
+    nombre,
+    Apellido1:    apellido1,
     Apellido2:    document.getElementById("editApellido2").value.trim(),
     mail:         document.getElementById("editMail").value.trim().toLowerCase(),
     telefono:     document.getElementById("editTelefono").value.trim(),
@@ -224,16 +280,39 @@ btnGuardar.addEventListener("click", async () => {
   };
 
   try {
-    await updateDoc(doc(db, "socios", docIdActual), cambios);
+    if (modoCreacion) {
+      const idSocio = document.getElementById("editIdSocio").value.trim();
+      const nuevoDocId = idSocio;
 
-    // Actualizar local
-    const idx = todosSocios.findIndex(x => x._docId === docIdActual);
-    if (idx !== -1) todosSocios[idx] = { ...todosSocios[idx], ...cambios };
+      // Comprobar que no exista ya ese ID de documento
+      const existente = await getDoc(doc(db, "socios", nuevoDocId));
+      if (existente.exists()) {
+        mostrarPopup("❌ Ya existe un socio con ese Nº de socio", "error");
+        return;
+      }
 
-    actualizarStats();
-    aplicarFiltros();
-    cerrarModal();
-    mostrarPopup("✅ Socio actualizado correctamente");
+      const nuevoSocio = { ...cambios, IdSocio: idSocio };
+      await setDoc(doc(db, "socios", nuevoDocId), nuevoSocio);
+
+      todosSocios.push({ _docId: nuevoDocId, ...nuevoSocio });
+      todosSocios.sort((a, b) => (parseInt(a.IdSocio) || 0) - (parseInt(b.IdSocio) || 0));
+
+      actualizarStats();
+      aplicarFiltros();
+      cerrarModal();
+      mostrarPopup("✅ Socio creado correctamente");
+    } else {
+      await updateDoc(doc(db, "socios", docIdActual), cambios);
+
+      // Actualizar local
+      const idx = todosSocios.findIndex(x => x._docId === docIdActual);
+      if (idx !== -1) todosSocios[idx] = { ...todosSocios[idx], ...cambios };
+
+      actualizarStats();
+      aplicarFiltros();
+      cerrarModal();
+      mostrarPopup("✅ Socio actualizado correctamente");
+    }
   } catch (err) {
     console.error(err);
     mostrarPopup("❌ Error al guardar los cambios", "error");

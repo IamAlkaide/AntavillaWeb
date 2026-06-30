@@ -20,6 +20,12 @@
     }
     .junta-hero h2 { margin: 0 0 4px 0; font-size: 24px; }
     .junta-hero p  { margin: 0; opacity: 0.9; font-size: 14px; }
+    .junta-hero-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
     .junta-badge {
       background: rgba(255,255,255,0.2);
       border: 1px solid rgba(255,255,255,0.4);
@@ -31,6 +37,20 @@
       text-transform: uppercase;
       white-space: nowrap;
     }
+    .btn-nuevo-socio {
+      background: white;
+      color: #7b1fa2;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: 'Manrope', sans-serif;
+      white-space: nowrap;
+      transition: background .15s;
+    }
+    .btn-nuevo-socio:hover { background: #f3e5f5; }
 
     /* ── STATS ── */
     .stats-row {
@@ -289,7 +309,10 @@
       <h2>🏛️ Acceso Junta Directiva</h2>
       <p>Gestión de socios · AFA Antavilla</p>
     </div>
-    <span class="junta-badge">🔐 Área restringida</span>
+    <div class="junta-hero-right">
+      <button class="btn-nuevo-socio" id="btnNuevoSocio">➕ Nuevo socio</button>
+      <span class="junta-badge">🔐 Área restringida</span>
+    </div>
   </div>
 
   <!-- STATS -->
@@ -357,10 +380,10 @@
 
 </section>
 
-<!-- MODAL EDICIÓN -->
+<!-- MODAL EDICIÓN / CREACIÓN -->
 <div class="modal-overlay" id="modalEdicion">
   <div class="modal-content">
-    <h3>✏️ Editar socio</h3>
+    <h3 id="modalTitulo">✏️ Editar socio</h3>
 
     <div class="modal-grid">
 

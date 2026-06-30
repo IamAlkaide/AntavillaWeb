@@ -1,7 +1,34 @@
 import { db } from "/app.js";
 import {
-  collection, query, where, getDocs, setDoc, doc, updateDoc
+  collection, query, where, getDocs, setDoc, doc, updateDoc, getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// ── EmailJS: configuración ───────────────────────────────
+// Sustituye estos 3 valores por los de tu cuenta de EmailJS
+const EMAILJS_PUBLIC_KEY  = "t7Jx7ppPb1M_hNTi4";
+const EMAILJS_SERVICE_ID  = "service_Afa";
+const EMAILJS_TEMPLATE_ID = "template_xcb8fvu";
+
+if (window.emailjs) {
+  window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+}
+
+async function notificarAltaSocio({ idSocio, nombre, apellido1, apellido2, mail, telefono }) {
+  if (!window.emailjs) return;
+  try {
+    await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      id_socio:  idSocio,
+      nombre,
+      apellido1,
+      apellido2,
+      mail,
+      telefono
+    });
+  } catch (err) {
+    console.error("Error enviando email de notificación:", err);
+    // No bloqueamos el alta del socio si falla el email
+  }
+}
 
 // ── Utilidades ──────────────────────────────────────────
 function sha256(str) {
@@ -200,5 +227,131 @@ document.getElementById("btnReset").addEventListener("click", async () => {
     mostrarError("resetError", "Error de conexión. Inténtalo de nuevo.");
   } finally {
     btn.disabled = false; btn.textContent = "Cambiar contraseña";
+  }
+});
+
+// ── ALTA PÚBLICA DE SOCIO ────────────────────────────────
+const modalAltaSocio   = document.getElementById("modalAltaSocio");
+const btnAltaSocio     = document.getElementById("btnAltaSocio");
+const btnCancelarAlta  = document.getElementById("btnCancelarAlta");
+const btnGuardarAlta   = document.getElementById("btnGuardarAlta");
+const altaHijosWrap    = document.getElementById("altaHijosWrap");
+
+function renderHijosAlta() {
+  let html = "";
+  for (let i = 1; i <= 4; i++) {
+    const ordinal = ["Primer", "Segundo", "Tercer", "Cuarto"][i - 1];
+    html += `
+      <div class="hijo-row">
+        <div class="hijo-titulo">${ordinal} hijo</div>
+        <div class="form-group full">
+          <label>Nombre, apellidos y año de nacimiento</label>
+          <input type="text" id="altaHijo${i}" placeholder="Ej: Gabriel Buendía Barras 2010">
+        </div>
+      </div>`;
+  }
+  altaHijosWrap.innerHTML = html;
+}
+
+function limpiarFormularioAlta() {
+  ["altaNombre","altaApellido1","altaApellido2","altaMail","altaTelefono","altaNif"].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+  renderHijosAlta();
+}
+
+function abrirModalAlta() {
+  limpiarFormularioAlta();
+  modalAltaSocio.classList.add("active");
+}
+
+function cerrarModalAlta() {
+  modalAltaSocio.classList.remove("active");
+}
+
+async function siguienteIdSocio() {
+  const snap = await getDocs(collection(db, "socios"));
+  let max = 0;
+  snap.forEach(d => {
+    const id = parseInt(d.data().IdSocio) || 0;
+    if (id > max) max = id;
+  });
+  return max + 1;
+}
+
+btnAltaSocio.addEventListener("click", abrirModalAlta);
+btnCancelarAlta.addEventListener("click", cerrarModalAlta);
+modalAltaSocio.addEventListener("click", e => { if (e.target === modalAltaSocio) cerrarModalAlta(); });
+
+btnGuardarAlta.addEventListener("click", async () => {
+  const nombre    = document.getElementById("altaNombre").value.trim();
+  const apellido1 = document.getElementById("altaApellido1").value.trim();
+  const apellido2 = document.getElementById("altaApellido2").value.trim();
+  const mail      = document.getElementById("altaMail").value.trim().toLowerCase();
+  const telefono  = document.getElementById("altaTelefono").value.trim();
+  const nif       = document.getElementById("altaNif").value.trim().toUpperCase();
+  const hijo1     = document.getElementById("altaHijo1").value.trim();
+
+  if (!nombre || !apellido1 || !mail || !hijo1) {
+    alert("Nombre, primer apellido, email e Hijo1 son obligatorios.");
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
+    alert("El email no es válido.");
+    return;
+  }
+
+  btnGuardarAlta.disabled = true;
+  btnGuardarAlta.textContent = "Enviando...";
+
+  try {
+    const idSocio = String(await siguienteIdSocio());
+
+    // Comprobar que no exista ya ese ID de documento
+    const existente = await getDoc(doc(db, "socios", idSocio));
+    if (existente.exists()) {
+      alert("Ha ocurrido un error generando tu número de socio. Inténtalo de nuevo.");
+      return;
+    }
+
+    const hijosData = {};
+    for (let i = 1; i <= 4; i++) {
+      hijosData[`Hijo${i}`] = document.getElementById(`altaHijo${i}`).value.trim();
+    }
+
+    const nuevoSocio = {
+      IdSocio: idSocio,
+      nombre,
+      Apellido1: apellido1,
+      Apellido2: apellido2,
+      mail,
+      telefono,
+      nif,
+      activo: true,
+      cuotaPagada: false,
+      rol: "socio",
+      ...hijosData,
+    };
+
+    await setDoc(doc(db, "socios", idSocio), nuevoSocio);
+
+    notificarAltaSocio({
+      idSocio,
+      nombre,
+      apellido1,
+      apellido2,
+      mail,
+      telefono
+    });
+
+    cerrarModalAlta();
+    alert("✅ ¡Inscripción enviada correctamente! En breve confirmaremos tu alta como socio.");
+
+  } catch (err) {
+    console.error(err);
+    alert("❌ Error al enviar la inscripción. Inténtalo de nuevo.");
+  } finally {
+    btnGuardarAlta.disabled = false;
+    btnGuardarAlta.textContent = "📋 Enviar inscripción";
   }
 });
