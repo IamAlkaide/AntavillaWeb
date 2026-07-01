@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="/styles.css">
   <style>
     .auth-wrap {
-      max-width: 420px;
+      max-width: 440px;
       margin: 40px auto;
     }
     .auth-tabs {
@@ -18,9 +18,9 @@
     }
     .auth-tab {
       flex: 1;
-      padding: 13px;
+      padding: 12px 6px;
       text-align: center;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: bold;
       cursor: pointer;
       background: #f0f4f8;
@@ -31,7 +31,6 @@
     .auth-tab.active {
       background: white;
       color: #005bbb;
-      border-bottom: 2px solid white;
     }
     .auth-card {
       background: white;
@@ -39,172 +38,59 @@
       border-radius: 0 0 12px 12px;
       padding: 28px 24px;
     }
-    .auth-card h2 {
-      margin: 0 0 6px 0;
-      font-size: 20px;
-      color: #111;
-    }
-    .auth-card .subtitulo {
-      color: #777;
-      font-size: 14px;
-      margin-bottom: 22px;
-    }
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .input-label {
-      font-size: 13px;
-      color: #555;
-      font-weight: 600;
-      margin-bottom: 4px;
-      display: block;
-    }
+    .auth-card h2 { margin: 0 0 6px 0; font-size: 20px; color: #111; }
+    .auth-card .subtitulo { color: #777; font-size: 14px; margin-bottom: 22px; line-height: 1.5; }
+    .input-group { display: flex; flex-direction: column; gap: 12px; }
+    .input-label { font-size: 13px; color: #555; font-weight: 600; margin-bottom: 4px; display: block; }
     .input {
-      padding: 11px 14px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 15px;
-      width: 100%;
-      box-sizing: border-box;
+      padding: 11px 14px; border: 1px solid #ccc; border-radius: 8px;
+      font-size: 15px; width: 100%; box-sizing: border-box;
+      font-family: 'Manrope', sans-serif;
     }
     .input:focus { outline: none; border-color: #005bbb; }
     .btn-primary {
-      background: #005bbb;
-      color: white;
-      border: none;
-      padding: 13px;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 4px;
-      font-weight: bold;
+      background: #005bbb; color: white; border: none; padding: 13px;
+      border-radius: 8px; font-size: 16px; cursor: pointer; width: 100%;
+      margin-top: 4px; font-weight: bold; font-family: 'Manrope', sans-serif;
     }
     .btn-primary:hover { background: #004a9a; }
     .btn-primary:disabled { background: #aaa; cursor: not-allowed; }
     .msg-error {
-      color: #c0392b;
-      background: #fdecea;
-      border: 1px solid #f5c6c2;
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin-top: 12px;
-      display: none;
-      font-size: 14px;
+      color: #c0392b; background: #fdecea; border: 1px solid #f5c6c2;
+      border-radius: 8px; padding: 10px 14px; margin-top: 12px;
+      display: none; font-size: 14px;
     }
     .msg-error.visible { display: block; }
     .msg-ok {
-      color: #2e7d32;
-      background: #e6f4ea;
-      border: 1px solid #a5d6a7;
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin-top: 12px;
-      display: none;
-      font-size: 14px;
+      color: #2e7d32; background: #e6f4ea; border: 1px solid #a5d6a7;
+      border-radius: 8px; padding: 10px 14px; margin-top: 12px;
+      display: none; font-size: 14px;
     }
     .msg-ok.visible { display: block; }
     .panel { display: none; }
     .panel.active { display: block; }
 
-    /* Botón ayuda flotante */
-    .btn-ayuda {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: #e6a800;
-      color: white;
-      border: none;
-      border-radius: 50px;
-      padding: 12px 20px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-      z-index: 999;
-      transition: background .15s;
-    }
-    .btn-ayuda:hover { background: #cc9400; }
-
-    /* Modal ayuda */
-    .modal-ayuda {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 2000;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-ayuda.active { display: flex; }
-    .modal-ayuda-content {
-      background: white;
-      border-radius: 14px;
-      padding: 32px 28px;
-      max-width: 380px;
-      width: 90%;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      text-align: center;
-    }
-    .modal-ayuda-content h3 { margin: 0 0 12px 0; font-size: 20px; color: #111; }
-    .modal-ayuda-content p  { color: #555; font-size: 15px; line-height: 1.6; margin: 0 0 20px 0; }
-    .modal-ayuda-content a  {
-      display: inline-block;
-      background: #005bbb;
-      color: white;
-      padding: 11px 22px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 15px;
-      margin-bottom: 10px;
-    }
-    .modal-ayuda-content a:hover { background: #004a9a; }
-    .btn-cerrar-ayuda {
+    /* Botón hacerse socio */
+    .btn-hacerse-socio {
       display: block;
-      margin: 8px auto 0;
-      background: none;
-      border: none;
-      color: #888;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    .btn-cerrar-ayuda:hover { color: #333; }
-
-    /* Aviso "hazte socio" */
-    .alta-socio-banner {
-      margin-top: 20px;
-      background: linear-gradient(135deg, #fff8e1, #fff3cd);
-      border: 1px solid #f0d060;
-      border-radius: 12px;
-      padding: 18px 20px;
-      text-align: center;
-    }
-    .alta-socio-banner p {
-      margin: 0 0 12px 0;
-      font-size: 15px;
-      color: #5a4500;
-      line-height: 1.5;
-    }
-    .btn-alta-socio {
-      display: inline-block;
+      width: 100%;
+      max-width: 440px;
+      margin: 24px auto 0;
+      padding: 14px;
       background: #e6a800;
       color: white;
-      padding: 11px 22px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 15px;
-      transition: background .15s;
       border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
       font-family: 'Manrope', sans-serif;
+      text-align: center;
+      transition: background .15s;
     }
-    .btn-alta-socio:hover { background: #cc9400; }
+    .btn-hacerse-socio:hover { background: #cc9500; }
 
-    /* ── MODAL ALTA SOCIO ── */
+    /* Modal alta */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -221,72 +107,42 @@
       background: white;
       border-radius: 14px;
       padding: 32px;
-      max-width: 620px;
+      max-width: 500px;
       width: 100%;
       box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      animation: slideUp .3s ease;
     }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .modal-content h2 { margin: 0 0 6px 0; font-size: 20px; }
+    .modal-content .subtitulo { color: #777; font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-row.full { grid-template-columns: 1fr; }
+    .form-field { display: flex; flex-direction: column; gap: 4px; }
+    .seccion-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; color: #005bbb; margin: 20px 0 10px 0;
+      border-bottom: 1px solid #e8e8e8; padding-bottom: 6px;
     }
-    .modal-content h3 { margin: 0 0 6px 0; font-size: 20px; color: #e6a800; }
-    .modal-content .modal-subtitulo { margin: 0 0 20px 0; font-size: 14px; color: #777; }
-    .modal-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 20px;
+    .checkbox-row {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 13px; color: #444; line-height: 1.5; margin-bottom: 20px;
     }
-    .modal-grid .full { grid-column: 1 / -1; }
-    .form-group { display: flex; flex-direction: column; gap: 4px; }
-    .form-group label { font-size: 12px; font-weight: 600; color: #555; }
-    .form-group input, .form-group select {
-      padding: 9px 12px;
-      border: 1px solid #ccc;
-      border-radius: 7px;
-      font-size: 14px;
-      font-family: 'Manrope', sans-serif;
+    .checkbox-row input[type="checkbox"] { margin-top: 3px; flex-shrink: 0; }
+    .modal-footer { display: flex; gap: 10px; }
+    .btn-secondary {
+      flex: 1; padding: 13px; background: white; color: #005bbb;
+      border: 2px solid #005bbb; border-radius: 8px; font-size: 15px;
+      font-weight: bold; cursor: pointer; font-family: 'Manrope', sans-serif;
     }
-    .form-group input:focus, .form-group select:focus { outline: none; border-color: #e6a800; }
-    .modal-section-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #e6a800;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin: 8px 0 4px 0;
-      grid-column: 1 / -1;
-      border-bottom: 1px solid #e8e8e8;
-      padding-bottom: 4px;
+    .btn-secondary:hover { background: #f0f6ff; }
+    .btn-submit {
+      flex: 2; padding: 13px; background: #005bbb; color: white;
+      border: none; border-radius: 8px; font-size: 15px;
+      font-weight: bold; cursor: pointer; font-family: 'Manrope', sans-serif;
     }
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 8px;
-    }
-    .btn-cancel { background: white; color: #666; border: 1px solid #ccc; border-radius: 8px; padding: 10px 20px; cursor: pointer; font-family: 'Manrope', sans-serif; font-size: 14px; }
-    .btn-save   { background: #e6a800; color: white; border: none; border-radius: 8px; padding: 10px 24px; cursor: pointer; font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: bold; }
-    .btn-save:hover { background: #cc9400; }
+    .btn-submit:hover { background: #004a9a; }
+    .btn-submit:disabled { background: #aaa; cursor: not-allowed; }
 
-    .hijos-wrap { grid-column: 1 / -1; }
-    .hijo-row {
-      background: #fffbea;
-      border: 1px solid #f0d060;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 8px;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-    }
-    .hijo-titulo { font-size: 12px; font-weight: 700; color: #e6a800; grid-column: 1 / -1; margin-bottom: 2px; }
-
-    @media (max-width: 600px) {
-      .modal-grid { grid-template-columns: 1fr; }
-      .modal-grid .full { grid-column: 1; }
-      .hijo-row { grid-template-columns: 1fr; }
+    @media (max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -320,20 +176,21 @@
 </header>
 
 <section class="section">
-  <div class="auth-wrap">
 
+  <!-- TABS: Acceder / Registrarse / Restablecer contraseña -->
+  <div class="auth-wrap">
     <div class="auth-tabs">
-      <button class="auth-tab active" id="tabLogin" onclick="mostrarPanel('login')">🔐 Acceder</button>
-      <button class="auth-tab" id="tabRegistro" onclick="mostrarPanel('registro')">📋 Registrarse</button>
-      <button class="auth-tab" id="tabReset" onclick="mostrarPanel('reset')">🔑 Contraseña</button>
+      <button class="auth-tab active" id="tabLogin"  onclick="mostrarPanel('login')">🔐 Acceder</button>
+      <button class="auth-tab" id="tabRegistro"      onclick="mostrarPanel('registro')">🔑 Registrarse</button>
+      <button class="auth-tab" id="tabReset"         onclick="mostrarPanel('reset')">🔓 Contraseña</button>
     </div>
 
     <div class="auth-card">
 
-      <!-- PANEL LOGIN -->
+      <!-- ACCEDER -->
       <div id="panelLogin" class="panel active">
         <h2>Zona de socios</h2>
-        <p class="subtitulo">Introduce tu email y contraseña para acceder.</p>
+        <p class="subtitulo">Introduce tu email y contraseña para acceder al área privada.</p>
         <div class="input-group">
           <div>
             <label class="input-label">Email</label>
@@ -348,13 +205,13 @@
         <p id="loginError" class="msg-error"></p>
       </div>
 
-      <!-- PANEL REGISTRO -->
+      <!-- REGISTRARSE (crear acceso zona privada) -->
       <div id="panelRegistro" class="panel">
-        <h2>Crear acceso</h2>
-        <p class="subtitulo">Solo para socios activos. Necesitas tu email de socio para registrarte.</p>
+        <h2>Registrarse</h2>
+        <p class="subtitulo">Solo para socios activos. Usa el email con el que estás dado de alta. Si aún no eres socio, usa el botón <strong>"Quiero ser socio"</strong> de abajo.</p>
         <div class="input-group">
           <div>
-            <label class="input-label">Email (el mismo que está en tu ficha de socio)</label>
+            <label class="input-label">Email de socio</label>
             <input id="regEmail" type="email" placeholder="tu@email.com" class="input" autocomplete="email">
           </div>
           <div>
@@ -368,89 +225,110 @@
           <button class="btn-primary" id="btnRegistro">Crear acceso</button>
         </div>
         <p id="registroError" class="msg-error"></p>
-        <p id="registroOk" class="msg-ok"></p>
+        <p id="registroOk"    class="msg-ok"></p>
       </div>
 
-      <!-- PANEL RESET CONTRASEÑA -->
+      <!-- RESTABLECER CONTRASEÑA -->
       <div id="panelReset" class="panel">
-        <h2>Cambiar contraseña</h2>
-        <p class="subtitulo">Introduce tu email de socio y elige una nueva contraseña.</p>
+        <h2>Restablecer contraseña</h2>
+        <p class="subtitulo">Introduce tu email y te enviaremos un enlace para crear una nueva contraseña.</p>
         <div class="input-group">
           <div>
-            <label class="input-label">Email (el mismo que está en tu ficha de socio)</label>
+            <label class="input-label">Email de socio</label>
             <input id="resetEmail" type="email" placeholder="tu@email.com" class="input" autocomplete="email">
           </div>
-          <div>
-            <label class="input-label">Nueva contraseña (mínimo 6 caracteres)</label>
-            <input id="resetPassword" type="password" placeholder="••••••••" class="input" autocomplete="new-password">
-          </div>
-          <div>
-            <label class="input-label">Repetir nueva contraseña</label>
-            <input id="resetPassword2" type="password" placeholder="••••••••" class="input" autocomplete="new-password">
-          </div>
-          <button class="btn-primary" id="btnReset">Cambiar contraseña</button>
+          <button class="btn-primary" id="btnReset">Enviar enlace</button>
         </div>
         <p id="resetError" class="msg-error"></p>
-        <p id="resetOk" class="msg-ok"></p>
+        <p id="resetOk"    class="msg-ok"></p>
       </div>
 
     </div>
-	<!-- AVISO: HAZTE SOCIO -->
-    <div class="alta-socio-banner">
-      <p>¿Aún no eres socio del AFA?<br>Apúntate aquí para colaborar con el AFA y estar informado de todo lo que ocurre.</p>
-      <button class="btn-alta-socio" id="btnAltaSocio">📋 Hazte socio</button>
-    </div>
-	
   </div>
+
+  <!-- BOTÓN HACERSE SOCIO -->
+  <button class="btn-hacerse-socio" id="btnAbrirAlta">
+    📋 Quiero ser socio de la AFA
+  </button>
+
 </section>
 
-<!-- MODAL ALTA SOCIO -->
-<div class="modal-overlay" id="modalAltaSocio">
+<!-- MODAL ALTA NUEVO SOCIO -->
+<div class="modal-overlay" id="modalAlta">
   <div class="modal-content">
-    <h3>📋 Hazte socio del AFA</h3>
-    <p class="modal-subtitulo">Rellena tus datos para darte de alta como socio. Te contactaremos para confirmar tu inscripción.</p>
+    <h2>📋 Solicitud de alta como socio</h2>
+    <p class="subtitulo">La junta revisará tu solicitud y te activará el acceso. Una vez activado, podrás registrarte en la zona privada.</p>
 
-    <div class="modal-grid">
+    <div class="seccion-label">Datos del titular</div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="input-label">Nombre *</label>
+        <input id="altaNombre" type="text" class="input" placeholder="María">
+      </div>
+      <div class="form-field">
+        <label class="input-label">Primer apellido *</label>
+        <input id="altaApellido1" type="text" class="input" placeholder="García">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="input-label">Segundo apellido</label>
+        <input id="altaApellido2" type="text" class="input" placeholder="López">
+      </div>
+      <div class="form-field">
+        <label class="input-label">NIF/DNI *</label>
+        <input id="altaNif" type="text" class="input" placeholder="12345678A">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="input-label">Email *</label>
+        <input id="altaEmail" type="email" class="input" placeholder="tu@email.com">
+      </div>
+      <div class="form-field">
+        <label class="input-label">Teléfono *</label>
+        <input id="altaTelefono" type="tel" class="input" placeholder="600 000 000">
+      </div>
+    </div>
 
-      <div class="modal-section-title">Datos del socio</div>
+    <div class="seccion-label">Hijos en el centro</div>
+    <div class="form-row full">
+      <div class="form-field">
+        <label class="input-label">Primer hijo — nombre, apellidos y año de nacimiento *</label>
+        <input id="altaHijo1" type="text" class="input" placeholder="Ana García López 2015">
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="form-field">
+        <label class="input-label">Segundo hijo</label>
+        <input id="altaHijo2" type="text" class="input" placeholder="Opcional">
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="form-field">
+        <label class="input-label">Tercer hijo</label>
+        <input id="altaHijo3" type="text" class="input" placeholder="Opcional">
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="form-field">
+        <label class="input-label">Cuarto hijo</label>
+        <input id="altaHijo4" type="text" class="input" placeholder="Opcional">
+      </div>
+    </div>
 
-      <div class="form-group">
-        <label>Nombre *</label>
-        <input type="text" id="altaNombre">
-      </div>
-      <div class="form-group">
-        <label>Primer apellido *</label>
-        <input type="text" id="altaApellido1">
-      </div>
-      <div class="form-group">
-        <label>Segundo apellido</label>
-        <input type="text" id="altaApellido2">
-      </div>
-      <div class="form-group">
-        <label>Email *</label>
-        <input type="email" id="altaMail">
-      </div>
-      <div class="form-group">
-        <label>Teléfono</label>
-        <input type="text" id="altaTelefono">
-      </div>
-      <div class="form-group">
-        <label>NIF/NIE</label>
-        <input type="text" id="altaNif">
-      </div>
-
-      <div class="modal-section-title">Hijos</div>
-
-      <div class="hijos-wrap" id="altaHijosWrap">
-        <!-- generado dinámicamente -->
-      </div>
-
+    <div class="seccion-label">Consentimiento</div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="altaRgpd">
+      <label for="altaRgpd">He leído y acepto la <a href="/politica-privacidad.html" target="_blank">Política de Privacidad</a> de AFA Antavilla y consiento el tratamiento de mis datos para la gestión de mi condición de socio. *</label>
     </div>
 
     <div class="modal-footer">
-      <button class="btn-cancel" id="btnCancelarAlta">Cancelar</button>
-      <button class="btn-save" id="btnGuardarAlta">📋 Enviar inscripción</button>
+      <button class="btn-secondary" id="btnCerrarAlta">Cancelar</button>
+      <button class="btn-submit"    id="btnEnviarAlta">Enviar solicitud</button>
     </div>
+    <p id="altaError" class="msg-error"></p>
+    <p id="altaOk"    class="msg-ok"></p>
   </div>
 </div>
 
@@ -461,46 +339,28 @@
     <a href="/encuestas">Encuestas</a>
   </div>
   <div class="footer-legal">
-    <a href="/aviso-legal.html">Aviso Legal</a>
-    <a href="/politica-privacidad.html">Política de Privacidad</a>
-    <a href="/politica-cookies.html">Política de Cookies</a>
-    <a href="/proteccion-datos.html">Protección de Datos</a>
+    <a href="/aviso-legal">Aviso Legal</a>
+    <a href="/politica-privacidad">Política de Privacidad</a>
+    <a href="/politica-cookies">Política de Cookies</a>
+    <a href="/proteccion-datos">Protección de Datos</a>
   </div>
 </footer>
 
 <script>
   function mostrarPanel(cual) {
     ["login","registro","reset"].forEach(p => {
-      document.getElementById("panel" + p.charAt(0).toUpperCase() + p.slice(1))
-        .classList.toggle("active", p === cual);
-      document.getElementById("tab" + p.charAt(0).toUpperCase() + p.slice(1))
-        .classList.toggle("active", p === cual);
+      const cap = p.charAt(0).toUpperCase() + p.slice(1);
+      document.getElementById("panel" + cap).classList.toggle("active", p === cual);
+      document.getElementById("tab"   + cap).classList.toggle("active", p === cual);
     });
   }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script type="module" src="/socios.js"></script>
-
 <script>
   var t = document.getElementById("navToggle");
   if(t) t.addEventListener("click", function() {
     document.getElementById("navLinks").classList.toggle("open");
   });
 </script>
-<!-- BOTÓN AYUDA FLOTANTE -->
-<button class="btn-ayuda" onclick="document.getElementById('modalAyuda').classList.add('active')">
-  ❓ ¿Necesitas ayuda?
-</button>
-
-<!-- MODAL AYUDA -->
-<div class="modal-ayuda" id="modalAyuda">
-  <div class="modal-ayuda-content">
-    <h3>¿Necesitas ayuda?</h3>
-    <p>Si tienes problemas para acceder o registrarte, escríbenos y te ayudamos lo antes posible.</p>
-    <a href="mailto:afa@colegioseiantavilla.com">✉️ afa@colegioseiantavilla.com</a><br>
-    <button class="btn-cerrar-ayuda" onclick="document.getElementById('modalAyuda').classList.remove('active')">Cerrar</button>
-  </div>
-</div>
-
 </body>
 </html>

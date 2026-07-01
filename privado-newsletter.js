@@ -1,19 +1,28 @@
-import { db } from "/app.js";
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-// Comprobación de sesión
-if (!localStorage.getItem("socioActivo") || localStorage.getItem("socioActivo") !== "true") {
-  window.location.href = "/socios.html";
-}
+import { db, auth } from "/app.js";
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  collection, getDocs
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const contenedor = document.getElementById("listaNewsletter");
 
+// ── GUARD DE SESIÓN ─────────────────────────────────────
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "/socios.html";
+    return;
+  }
+  cargarNewsletter();
+});
+
+// ── CARGA ───────────────────────────────────────────────
 async function cargarNewsletter() {
   const snap = await getDocs(collection(db, "newsletter"));
   const docs = [];
   snap.forEach(d => docs.push(d.data()));
 
-  // Ordenar por fecha descendente (más reciente primero)
   docs.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
   if (docs.length === 0) {
@@ -22,10 +31,9 @@ async function cargarNewsletter() {
   }
 
   contenedor.innerHTML = docs.map(n => {
-    // Extraer el ID de Drive del enlace (acepta cualquier formato de URL de Drive)
-    const idMatch = n.url.match(/[-\w]{25,}/);
-    const driveId = idMatch ? idMatch[0] : null;
-    const urlVer      = driveId ? `https://drive.google.com/file/d/${driveId}/preview` : n.url;
+    const idMatch      = n.url.match(/[-\w]{25,}/);
+    const driveId      = idMatch ? idMatch[0] : null;
+    const urlVer       = driveId ? `https://drive.google.com/file/d/${driveId}/preview`              : n.url;
     const urlDescargar = driveId ? `https://drive.google.com/uc?export=download&id=${driveId}` : n.url;
 
     return `
@@ -42,12 +50,11 @@ async function cargarNewsletter() {
   `}).join("");
 }
 
+// ── HELPERS ─────────────────────────────────────────────
 function formatFecha(fechaStr) {
   if (!fechaStr) return "";
   const [y, m, d] = fechaStr.split("-");
   const meses = ["enero","febrero","marzo","abril","mayo","junio",
-                  "julio","agosto","septiembre","octubre","noviembre","diciembre"];
+                 "julio","agosto","septiembre","octubre","noviembre","diciembre"];
   return `${parseInt(d)} de ${meses[parseInt(m)-1]} de ${y}`;
 }
-
-cargarNewsletter();

@@ -1,21 +1,38 @@
-import { db } from "/app.js";
+import { db, auth } from "/app.js";
 import {
-  collection, getDocs, doc, updateDoc, setDoc, getDoc
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  collection, getDocs, doc, updateDoc, setDoc, getDoc,
+  query, where
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // ── GUARD: solo admins ──────────────────────────────────
-if (localStorage.getItem("socioActivo") !== "true") {
-  window.location.href = "/socios.html";
-}
-if (localStorage.getItem("esAdmin") !== "true") {
-  window.location.href = "/privado.html";
-}
+// El rol se verifica contra Firestore, no contra localStorage
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = "/socios.html";
+    return;
+  }
+
+  // Buscar el documento del socio por email y comprobar rol
+  const q    = query(collection(db, "socios"), where("mail", "==", user.email));
+  const snap = await getDocs(q);
+
+  if (snap.empty || snap.docs[0].data().rol !== "admin") {
+    window.location.href = "/privado.html";
+    return;
+  }
+
+  // Solo si es admin se carga la página
+  cargarSocios();
+});
 
 // ── ESTADO ─────────────────────────────────────────────
-let todosSocios   = [];   // raw de Firestore
+let todosSocios     = [];
 let sociosFiltrados = [];
-let docIdActual   = null; // docId Firestore del socio en edición
-let modoCreacion  = false; // true si el modal está en modo "nuevo socio"
+let docIdActual     = null;
+let modoCreacion    = false;
 
 // ── ELEMENTOS DOM ───────────────────────────────────────
 const cuerpoTabla   = document.getElementById("cuerpoTabla");
@@ -64,10 +81,7 @@ async function cargarSocios() {
     const snap = await getDocs(collection(db, "socios"));
     todosSocios = [];
     snap.forEach(d => todosSocios.push({ _docId: d.id, ...d.data() }));
-
-    // Ordenar por nº socio
     todosSocios.sort((a, b) => (parseInt(a.IdSocio) || 0) - (parseInt(b.IdSocio) || 0));
-
     actualizarStats();
     aplicarFiltros();
   } catch (err) {
@@ -97,17 +111,12 @@ function aplicarFiltros() {
   const fCuota  = filtroCuota.value;
 
   sociosFiltrados = todosSocios.filter(s => {
-    // Filtro activo
     if (fActivo !== "") {
-      const activo = fActivo === "true";
-      if ((s.activo === true) !== activo) return false;
+      if ((s.activo === true) !== (fActivo === "true")) return false;
     }
-    // Filtro cuota
     if (fCuota !== "") {
-      const cuota = fCuota === "true";
-      if ((s.cuotaPagada === true) !== cuota) return false;
+      if ((s.cuotaPagada === true) !== (fCuota === "true")) return false;
     }
-    // Búsqueda texto
     if (termino) {
       const haystack = [
         s.nombre, s.Apellido1, s.Apellido2,
@@ -132,14 +141,14 @@ function renderTabla(socios) {
   }
 
   cuerpoTabla.innerHTML = socios.map(s => {
-    const nombre    = `${s.nombre || "—"} ${s.Apellido1 || ""} ${s.Apellido2 || ""}`.trim();
-    const activo    = s.activo === true
+    const nombre   = `${s.nombre || "—"} ${s.Apellido1 || ""} ${s.Apellido2 || ""}`.trim();
+    const activo   = s.activo === true
       ? `<span class="badge-activo">Activo</span>`
       : `<span class="badge-inactivo">Inactivo</span>`;
-    const cuota     = s.cuotaPagada === true
+    const cuota    = s.cuotaPagada === true
       ? `<span class="badge-cuota-ok">✅ Pagada</span>`
       : `<span class="badge-cuota-no">⏳ Pendiente</span>`;
-    const numHijos  = contarHijos(s);
+    const numHijos = contarHijos(s);
 
     return `
       <tr>
@@ -169,19 +178,18 @@ function abrirModalEdicion(docId) {
   docIdActual  = docId;
   modalTitulo.textContent = "✏️ Editar socio";
 
-  document.getElementById("editIdSocio").value   = s.IdSocio  || "";
-  document.getElementById("editNombre").value    = s.nombre   || "";
+  document.getElementById("editIdSocio").value   = s.IdSocio   || "";
+  document.getElementById("editNombre").value    = s.nombre    || "";
   document.getElementById("editApellido1").value = s.Apellido1 || "";
   document.getElementById("editApellido2").value = s.Apellido2 || "";
-  document.getElementById("editMail").value      = s.mail     || "";
-  document.getElementById("editTelefono").value  = s.telefono || "";
-  document.getElementById("editNif").value       = s.nif      || "";
+  document.getElementById("editMail").value      = s.mail      || "";
+  document.getElementById("editTelefono").value  = s.telefono  || "";
+  document.getElementById("editNif").value       = s.nif       || "";
   document.getElementById("editActivo").value    = String(s.activo === true);
   document.getElementById("editCuota").value     = String(s.cuotaPagada === true);
-  document.getElementById("editRol").value       = s.rol      || "socio";
+  document.getElementById("editRol").value       = s.rol       || "socio";
 
   renderHijos(s);
-
   modalEdicion.classList.add("active");
 }
 
@@ -203,7 +211,6 @@ function abrirModalNuevo() {
   document.getElementById("editRol").value       = "socio";
 
   renderHijos({});
-
   modalEdicion.classList.add("active");
 }
 
@@ -248,19 +255,16 @@ btnGuardar.addEventListener("click", async () => {
 
   if (modoCreacion) {
     if (!nombre || !apellido1 || !mail || !hijo1) {
-      mostrarPopup("❌ Nombre, primer apellido, email e Hijo1 son obligatorios", "error");
-      return;
+      mostrarPopup("❌ Nombre, primer apellido, email e Hijo1 son obligatorios", "error"); return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
-      mostrarPopup("❌ El email no es válido", "error");
-      return;
+      mostrarPopup("❌ El email no es válido", "error"); return;
     }
   }
 
-  btnGuardar.disabled = true;
+  btnGuardar.disabled    = true;
   btnGuardar.textContent = "Guardando...";
 
-  // Recoger hijos como campos planos Hijo1..Hijo4
   const hijosData = {};
   for (let i = 1; i <= 4; i++) {
     hijosData[`Hijo${i}`] = document.getElementById(`hijo${i}`).value.trim();
@@ -268,27 +272,25 @@ btnGuardar.addEventListener("click", async () => {
 
   const cambios = {
     nombre,
-    Apellido1:    apellido1,
-    Apellido2:    document.getElementById("editApellido2").value.trim(),
-    mail:         document.getElementById("editMail").value.trim().toLowerCase(),
-    telefono:     document.getElementById("editTelefono").value.trim(),
-    nif:          document.getElementById("editNif").value.trim().toUpperCase(),
-    activo:       document.getElementById("editActivo").value === "true",
-    cuotaPagada:  document.getElementById("editCuota").value === "true",
-    rol:          document.getElementById("editRol").value,
+    Apellido1:   apellido1,
+    Apellido2:   document.getElementById("editApellido2").value.trim(),
+    mail:        document.getElementById("editMail").value.trim().toLowerCase(),
+    telefono:    document.getElementById("editTelefono").value.trim(),
+    nif:         document.getElementById("editNif").value.trim().toUpperCase(),
+    activo:      document.getElementById("editActivo").value === "true",
+    cuotaPagada: document.getElementById("editCuota").value === "true",
+    rol:         document.getElementById("editRol").value,
     ...hijosData,
   };
 
   try {
     if (modoCreacion) {
-      const idSocio = document.getElementById("editIdSocio").value.trim();
+      const idSocio    = document.getElementById("editIdSocio").value.trim();
       const nuevoDocId = idSocio;
 
-      // Comprobar que no exista ya ese ID de documento
       const existente = await getDoc(doc(db, "socios", nuevoDocId));
       if (existente.exists()) {
-        mostrarPopup("❌ Ya existe un socio con ese Nº de socio", "error");
-        return;
+        mostrarPopup("❌ Ya existe un socio con ese Nº de socio", "error"); return;
       }
 
       const nuevoSocio = { ...cambios, IdSocio: idSocio };
@@ -296,18 +298,15 @@ btnGuardar.addEventListener("click", async () => {
 
       todosSocios.push({ _docId: nuevoDocId, ...nuevoSocio });
       todosSocios.sort((a, b) => (parseInt(a.IdSocio) || 0) - (parseInt(b.IdSocio) || 0));
-
       actualizarStats();
       aplicarFiltros();
       cerrarModal();
       mostrarPopup("✅ Socio creado correctamente");
+
     } else {
       await updateDoc(doc(db, "socios", docIdActual), cambios);
-
-      // Actualizar local
       const idx = todosSocios.findIndex(x => x._docId === docIdActual);
       if (idx !== -1) todosSocios[idx] = { ...todosSocios[idx], ...cambios };
-
       actualizarStats();
       aplicarFiltros();
       cerrarModal();
@@ -317,7 +316,7 @@ btnGuardar.addEventListener("click", async () => {
     console.error(err);
     mostrarPopup("❌ Error al guardar los cambios", "error");
   } finally {
-    btnGuardar.disabled = false;
+    btnGuardar.disabled    = false;
     btnGuardar.textContent = "💾 Guardar cambios";
   }
 });
@@ -332,6 +331,3 @@ btnLimpiar.addEventListener("click", () => {
   filtroCuota.value  = "";
   aplicarFiltros();
 });
-
-// ── INIT ──────────────────────────────────────────────────
-cargarSocios();

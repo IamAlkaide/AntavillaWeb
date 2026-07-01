@@ -64,7 +64,7 @@
 
     <div class="legal-header-box">
       <h1>🔒 Política de Privacidad</h1>
-      <p>Última actualización: 18 de junio de 2026</p>
+      <p>Última actualización: 1 de julio de 2026</p>
     </div>
 
     <p>En cumplimiento del Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo (RGPD) y de la Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD), la AFA Antavilla informa sobre el tratamiento de los datos personales recabados a través de este sitio web.</p>
@@ -96,7 +96,7 @@
           <td>Interés legítimo / consentimiento del interesado (art. 6.1.a y 6.1.f RGPD)</td>
         </tr>
         <tr>
-          <td>Gestión del acceso a la zona privada del sitio web</td>
+          <td>Gestión del acceso a la zona privada del sitio web mediante Firebase Authentication</td>
           <td>Ejecución de relación contractual / estatutaria (art. 6.1.b RGPD)</td>
         </tr>
         <tr>
@@ -107,28 +107,66 @@
           <td>Realización de encuestas internas</td>
           <td>Consentimiento del interesado (art. 6.1.a RGPD)</td>
         </tr>
+        <tr>
+          <td>Tramitación de solicitudes de alta como socio</td>
+          <td>Consentimiento del interesado (art. 6.1.a RGPD)</td>
+        </tr>
       </tbody>
     </table>
 
     <h2>3. Datos tratados</h2>
     <p>Los datos personales que la AFA Antavilla puede tratar incluyen:</p>
     <ul>
-      <li>Datos identificativos: nombre, apellidos.</li>
-      <li>Datos de contacto: correo electrónico, teléfono.</li>
-      <li>Datos de acceso: correo electrónico y hash de contraseña (nunca se almacena la contraseña en texto plano).</li>
-      <li>Datos relativos a la condición de socio: número de socio, estado de la cuota.</li>
+      <li><strong>Datos identificativos:</strong> nombre, apellidos, NIF/DNI.</li>
+      <li><strong>Datos de contacto:</strong> correo electrónico, teléfono.</li>
+      <li><strong>Datos de acceso:</strong> correo electrónico gestionado mediante Firebase Authentication (Google). Las contraseñas nunca se almacenan en texto plano ni son accesibles por la AFA.</li>
+      <li><strong>Datos relativos a la condición de socio:</strong> número de socio, estado de la cuota, datos de hijos en edad escolar (nombre y año de nacimiento).</li>
     </ul>
 
-    <h2>4. Conservación de los datos</h2>
+    <h2>4. Medidas de seguridad técnicas</h2>
+    <p>La AFA Antavilla aplica las siguientes medidas técnicas para garantizar la seguridad de los datos personales:</p>
+    <ul>
+      <li><strong>Autenticación:</strong> acceso a la zona privada gestionado mediante Firebase Authentication (Google), con contraseñas cifradas mediante algoritmos seguros (bcrypt/scrypt) gestionados íntegramente por Google.</li>
+      <li><strong>Control de acceso a datos:</strong> Firestore Security Rules que restringen el acceso a cada colección según el rol del usuario autenticado. Los datos de socios son accesibles únicamente por usuarios autenticados.</li>
+      <li><strong>Cifrado en tránsito:</strong> toda la comunicación entre el navegador y los servidores se realiza mediante HTTPS (TLS), gestionado por Netlify.</li>
+      <li><strong>Acceso administrativo:</strong> la gestión de datos de socios está restringida a miembros de la junta con rol de administrador, verificado a nivel de servidor.</li>
+    </ul>
+
+    <h2>5. Conservación de los datos</h2>
     <p>Los datos se conservarán mientras el interesado mantenga la condición de socio activo y, una vez concluida dicha relación, durante los plazos legalmente exigibles para atender posibles responsabilidades.</p>
 
-    <h2>5. Destinatarios</h2>
-    <p>Los datos no se cederán a terceros salvo obligación legal. La AFA Antavilla utiliza servicios de infraestructura tecnológica (Google Firebase / Firestore) que actúan como encargados del tratamiento, con las garantías adecuadas conforme al RGPD.</p>
+    <h2>6. Encargados del tratamiento</h2>
+    <p>La AFA Antavilla utiliza los siguientes servicios de terceros que actúan como encargados del tratamiento, con las garantías adecuadas conforme al RGPD:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Proveedor</th>
+          <th>Servicio</th>
+          <th>Garantías RGPD</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Google Ireland Ltd.</strong> (Firebase / Firestore / Authentication)</td>
+          <td>Almacenamiento de datos y autenticación de usuarios</td>
+          <td>DPA suscrito. Cláusulas Contractuales Tipo aprobadas por la Comisión Europea.</td>
+        </tr>
+        <tr>
+          <td><strong>Netlify Inc.</strong></td>
+          <td>Alojamiento web y distribución de contenidos (CDN)</td>
+          <td>DPA disponible. Cláusulas Contractuales Tipo aprobadas por la Comisión Europea.</td>
+        </tr>
+      </tbody>
+    </table>
 
-    <h2>6. Transferencias internacionales</h2>
-    <p>Google LLC, proveedor del servicio Firebase, puede realizar transferencias internacionales de datos amparadas en las Cláusulas Contractuales Tipo aprobadas por la Comisión Europea y en el Marco de Privacidad de Datos UE-EE.UU.</p>
+    <h2>7. Transferencias internacionales</h2>
+    <p>Los proveedores Google LLC y Netlify Inc., con sede en Estados Unidos, pueden realizar transferencias internacionales de datos. Dichas transferencias están amparadas en:</p>
+    <ul>
+      <li>Las Cláusulas Contractuales Tipo (CCT) aprobadas por la Comisión Europea.</li>
+      <li>El Marco de Privacidad de Datos UE-EE.UU. (EU-U.S. Data Privacy Framework), en vigor desde julio de 2023.</li>
+    </ul>
 
-    <h2>7. Derechos de los interesados</h2>
+    <h2>8. Derechos de los interesados</h2>
     <p>El interesado puede ejercer en cualquier momento los siguientes derechos dirigiéndose a <a href="mailto:afa@colegioseiantavilla.com">afa@colegioseiantavilla.com</a>:</p>
     <ul>
       <li><strong>Acceso:</strong> conocer qué datos se tratan sobre su persona.</li>
@@ -140,7 +178,7 @@
     </ul>
     <p>Asimismo, tiene derecho a presentar una reclamación ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es" target="_blank">www.aepd.es</a>).</p>
 
-    <h2>8. Modificaciones</h2>
+    <h2>9. Modificaciones</h2>
     <p>La AFA Antavilla se reserva el derecho a actualizar esta Política de Privacidad. Se informará de cambios sustanciales a través del sitio web.</p>
 
   </div>

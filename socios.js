@@ -1,44 +1,16 @@
-import { db } from "/app.js";
+import { db, auth } from "/app.js";
 import {
-  collection, query, where, getDocs, setDoc, doc, updateDoc, getDoc
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  collection, query, where, getDocs,
+  updateDoc, doc, setDoc, runTransaction
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// ── EmailJS: configuración ───────────────────────────────
-// Sustituye estos 3 valores por los de tu cuenta de EmailJS
-const EMAILJS_PUBLIC_KEY  = "t7Jx7ppPb1M_hNTi4";
-const EMAILJS_SERVICE_ID  = "service_Afa";
-const EMAILJS_TEMPLATE_ID = "template_xcb8fvu";
-
-if (window.emailjs) {
-  window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-}
-
-async function notificarAltaSocio({ idSocio, nombre, apellido1, apellido2, mail, telefono }) {
-  if (!window.emailjs) return;
-  try {
-    await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      id_socio:  idSocio,
-      nombre,
-      apellido1,
-      apellido2,
-      mail,
-      telefono
-    });
-  } catch (err) {
-    console.error("Error enviando email de notificación:", err);
-    // No bloqueamos el alta del socio si falla el email
-  }
-}
-
-// ── Utilidades ──────────────────────────────────────────
-function sha256(str) {
-  // Hash simple para la contraseña usando SubtleCrypto nativo del navegador
-  const encoder = new TextEncoder();
-  return crypto.subtle.digest("SHA-256", encoder.encode(str)).then(buf =>
-    Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("")
-  );
-}
-
+// ── HELPERS UI ──────────────────────────────────────────
 function mostrarError(id, texto) {
   const el = document.getElementById(id);
   el.textContent = texto;
@@ -52,55 +24,54 @@ function mostrarOk(id, texto) {
   el.textContent = texto;
   el.classList.add("visible");
 }
+function ocultarOk(id) {
+  document.getElementById(id).classList.remove("visible");
+}
 
-// ── LOGIN ───────────────────────────────────────────────
+// ════════════════════════════════════════════════════════
+// 1. LOGIN
+// ════════════════════════════════════════════════════════
 document.getElementById("btnLogin").addEventListener("click", async () => {
   ocultarError("loginError");
   const email    = document.getElementById("loginEmail").value.trim().toLowerCase();
   const password = document.getElementById("loginPassword").value;
   const btn      = document.getElementById("btnLogin");
 
-  if (!email || !password) { mostrarError("loginError", "Rellena todos los campos."); return; }
+  if (!email || !password) {
+    mostrarError("loginError", "Rellena todos los campos."); return;
+  }
 
   btn.disabled = true; btn.textContent = "Verificando...";
 
   try {
-    // Buscar en colección "accesos" por email
-    const q    = query(collection(db, "accesos"), where("mail", "==", email));
+    await signInWithEmailAndPassword(auth, email, password);
+
+    const q    = query(collection(db, "socios"), where("mail", "==", email));
     const snap = await getDocs(q);
 
-    if (snap.empty) {
-      mostrarError("loginError", "Email no registrado. Usa la pestaña 'Registrarse' primero.");
+    if (snap.empty || snap.docs[0].data().activo !== true) {
+      await signOut(auth);
+      mostrarError("loginError", "Tu cuenta de socio no está activa. Contacta con la AFA.");
       return;
     }
 
-    const acceso = snap.docs[0].data();
-    const hash   = await sha256(password);
-
-    if (acceso.passwordHash !== hash) {
-      mostrarError("loginError", "Contraseña incorrecta.");
-      return;
-    }
-
-    // Verificar que el socio sigue activo
-    const socioQ    = query(collection(db, "socios"), where("mail", "==", email));
-    const socioSnap = await getDocs(socioQ);
-    if (socioSnap.empty || !socioSnap.docs[0].data().activo) {
-      mostrarError("loginError", "Tu cuenta de socio no está activa. Contacta con el AFA.");
-      return;
-    }
-
-    const datos = socioSnap.docs[0].data();
-    localStorage.setItem("socioActivo", "true");
-    localStorage.setItem("socioEmail", email);
-    localStorage.setItem("nombreCompleto", `${datos.nombre} ${datos.Apellido1}${datos.Apellido2 ? " " + datos.Apellido2 : ""}`);
+    const datos = snap.docs[0].data();
+    localStorage.setItem("nombreCompleto",
+      `${datos.nombre} ${datos.Apellido1}${datos.Apellido2 ? " " + datos.Apellido2 : ""}`);
     localStorage.setItem("idSocio", datos.IdSocio);
 
     window.location.href = "/privado.html";
 
   } catch (err) {
-    console.error(err);
-    mostrarError("loginError", "Error de conexión. Inténtalo de nuevo.");
+    const codigosCredencial = [
+      "auth/user-not-found", "auth/wrong-password",
+      "auth/invalid-credential", "auth/invalid-email"
+    ];
+    mostrarError("loginError",
+      codigosCredencial.includes(err.code)
+        ? "Email o contraseña incorrectos."
+        : "Error de conexión. Inténtalo de nuevo."
+    );
   } finally {
     btn.disabled = false; btn.textContent = "Entrar";
   }
@@ -110,10 +81,12 @@ document.getElementById("loginPassword").addEventListener("keydown", e => {
   if (e.key === "Enter") document.getElementById("btnLogin").click();
 });
 
-// ── REGISTRO ────────────────────────────────────────────
+// ════════════════════════════════════════════════════════
+// 2. REGISTRARSE (crear acceso zona privada — solo socios activos)
+// ════════════════════════════════════════════════════════
 document.getElementById("btnRegistro").addEventListener("click", async () => {
   ocultarError("registroError");
-  document.getElementById("registroOk").classList.remove("visible");
+  ocultarOk("registroOk");
 
   const email = document.getElementById("regEmail").value.trim().toLowerCase();
   const pass1 = document.getElementById("regPassword").value;
@@ -133,225 +106,176 @@ document.getElementById("btnRegistro").addEventListener("click", async () => {
   btn.disabled = true; btn.textContent = "Comprobando...";
 
   try {
-    // 1. Verificar que el email existe en la colección socios y está activo
     const q    = query(collection(db, "socios"), where("mail", "==", email));
     const snap = await getDocs(q);
 
     if (snap.empty) {
-      mostrarError("registroError", "Este email no corresponde a ningún socio registrado. Contacta con el AFA."); return;
+      mostrarError("registroError",
+        "Este email no corresponde a ningún socio registrado. Contacta con la AFA."); return;
+    }
+    if (!snap.docs[0].data().activo) {
+      mostrarError("registroError",
+        "Tu cuenta de socio no está activa aún. La junta debe activarla primero."); return;
     }
 
-    const datos = snap.docs[0].data();
-    if (!datos.activo) {
-      mostrarError("registroError", "Tu cuenta de socio no está activa. Contacta con el AFA."); return;
-    }
-
-    // 2. Verificar que no está ya registrado
-    const qExiste    = query(collection(db, "accesos"), where("mail", "==", email));
-    const existeSnap = await getDocs(qExiste);
-    if (!existeSnap.empty) {
-      mostrarError("registroError", "Este email ya tiene acceso creado. Usa la pestaña 'Acceder'."); return;
-    }
-
-    // 3. Guardar acceso con contraseña hasheada (ID = email saneado)
-    const hash  = await sha256(pass1);
-    const docId = email.replace(/[^a-z0-9]/g, "_");
-    await setDoc(doc(db, "accesos", docId), {
-      mail: email,
-      passwordHash: hash
-    });
+    const credencial = await createUserWithEmailAndPassword(auth, email, pass1);
+    await updateDoc(snap.docs[0].ref, { uid: credencial.user.uid });
+    await signOut(auth);
 
     mostrarOk("registroOk", "✅ Acceso creado correctamente. Ya puedes iniciar sesión.");
-    ["regEmail","regPassword","regPassword2"].forEach(id => {
+    ["regEmail", "regPassword", "regPassword2"].forEach(id => {
       document.getElementById(id).value = "";
     });
 
   } catch (err) {
-    console.error(err);
-    mostrarError("registroError", "Error de conexión. Inténtalo de nuevo.");
+    mostrarError("registroError",
+      err.code === "auth/email-already-in-use"
+        ? "Este email ya tiene acceso creado. Usa 'Acceder' o restablece tu contraseña si la olvidaste."
+        : "Error de conexión. Inténtalo de nuevo."
+    );
   } finally {
     btn.disabled = false; btn.textContent = "Crear acceso";
   }
 });
 
-// ── RESET CONTRASEÑA ─────────────────────────────────
+// ════════════════════════════════════════════════════════
+// 3. RESTABLECER CONTRASEÑA
+// Firebase Auth envía el email automáticamente desde sus servidores.
+// No requiere EmailJS ni configuración adicional.
+// ════════════════════════════════════════════════════════
 document.getElementById("btnReset").addEventListener("click", async () => {
   ocultarError("resetError");
-  document.getElementById("resetOk").classList.remove("visible");
+  ocultarOk("resetOk");
 
   const email = document.getElementById("resetEmail").value.trim().toLowerCase();
-  const pass1 = document.getElementById("resetPassword").value;
-  const pass2 = document.getElementById("resetPassword2").value;
   const btn   = document.getElementById("btnReset");
 
-  if (!email || !pass1 || !pass2) {
-    mostrarError("resetError", "Rellena todos los campos."); return;
-  }
-  if (pass1.length < 6) {
-    mostrarError("resetError", "La contraseña debe tener al menos 6 caracteres."); return;
-  }
-  if (pass1 !== pass2) {
-    mostrarError("resetError", "Las contraseñas no coinciden."); return;
+  if (!email) {
+    mostrarError("resetError", "Introduce tu email."); return;
   }
 
-  btn.disabled = true; btn.textContent = "Comprobando...";
+  btn.disabled = true; btn.textContent = "Enviando...";
 
   try {
-    // Verificar que el email tiene acceso registrado
-    const q    = query(collection(db, "accesos"), where("mail", "==", email));
-    const snap = await getDocs(q);
-
-    if (snap.empty) {
-      mostrarError("resetError", "No existe ninguna cuenta con ese email. Usa 'Registrarse' primero."); return;
-    }
-
-    // Verificar que el socio sigue activo
-    const socioQ    = query(collection(db, "socios"), where("mail", "==", email));
-    const socioSnap = await getDocs(socioQ);
-    if (socioSnap.empty || !socioSnap.docs[0].data().activo) {
-      mostrarError("resetError", "Tu cuenta de socio no está activa. Contacta con la AFA."); return;
-    }
-
-    // Actualizar el hash en Firestore
-    const hash  = await sha256(pass1);
-    const docId = snap.docs[0].id;
-    await updateDoc(doc(db, "accesos", docId), { passwordHash: hash });
-
-    mostrarOk("resetOk", "✅ Contraseña actualizada correctamente. Ya puedes iniciar sesión.");
-    ["resetEmail","resetPassword","resetPassword2"].forEach(id => {
-      document.getElementById(id).value = "";
-    });
+    await sendPasswordResetEmail(auth, email);
+    // Mismo mensaje tanto si existe como si no (seguridad: no revelar qué emails están registrados)
+    mostrarOk("resetOk",
+      "✅ Si el email está registrado, recibirás un enlace en unos minutos. Revisa también la carpeta de spam.");
+    document.getElementById("resetEmail").value = "";
 
   } catch (err) {
-    console.error(err);
-    mostrarError("resetError", "Error de conexión. Inténtalo de nuevo.");
+    // Mostramos el mismo mensaje de éxito aunque falle, por seguridad
+    mostrarOk("resetOk",
+      "✅ Si el email está registrado, recibirás un enlace en unos minutos. Revisa también la carpeta de spam.");
   } finally {
-    btn.disabled = false; btn.textContent = "Cambiar contraseña";
+    btn.disabled = false; btn.textContent = "Enviar enlace";
   }
 });
 
-// ── ALTA PÚBLICA DE SOCIO ────────────────────────────────
-const modalAltaSocio   = document.getElementById("modalAltaSocio");
-const btnAltaSocio     = document.getElementById("btnAltaSocio");
-const btnCancelarAlta  = document.getElementById("btnCancelarAlta");
-const btnGuardarAlta   = document.getElementById("btnGuardarAlta");
-const altaHijosWrap    = document.getElementById("altaHijosWrap");
+// ════════════════════════════════════════════════════════
+// 4. ALTA NUEVO SOCIO (modal → insert en socios con activo: false)
+// IdSocio se asigna automáticamente usando un contador atómico
+// en config/contadores.ultimoIdSocio
+// ════════════════════════════════════════════════════════
 
-function renderHijosAlta() {
-  let html = "";
-  for (let i = 1; i <= 4; i++) {
-    const ordinal = ["Primer", "Segundo", "Tercer", "Cuarto"][i - 1];
-    html += `
-      <div class="hijo-row">
-        <div class="hijo-titulo">${ordinal} hijo</div>
-        <div class="form-group full">
-          <label>Nombre, apellidos y año de nacimiento</label>
-          <input type="text" id="altaHijo${i}" placeholder="Ej: Gabriel Buendía Barras 2010">
-        </div>
-      </div>`;
-  }
-  altaHijosWrap.innerHTML = html;
-}
-
-function limpiarFormularioAlta() {
-  ["altaNombre","altaApellido1","altaApellido2","altaMail","altaTelefono","altaNif"].forEach(id => {
-    document.getElementById(id).value = "";
+// Obtener siguiente IdSocio de forma atómica
+async function siguienteIdSocio() {
+  const contadorRef = doc(db, "config", "contadores");
+  let nuevoId;
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(contadorRef);
+    const actual = snap.exists() ? (snap.data().ultimoIdSocio || 0) : 0;
+    nuevoId = actual + 1;
+    transaction.set(contadorRef, { ultimoIdSocio: nuevoId }, { merge: true });
   });
-  renderHijosAlta();
+  return String(nuevoId);
 }
 
-function abrirModalAlta() {
-  limpiarFormularioAlta();
-  modalAltaSocio.classList.add("active");
-}
+// Modal
+const modalAlta     = document.getElementById("modalAlta");
+const btnAbrirAlta  = document.getElementById("btnAbrirAlta");
+const btnCerrarAlta = document.getElementById("btnCerrarAlta");
+
+btnAbrirAlta.addEventListener("click", () => {
+  ocultarError("altaError");
+  ocultarOk("altaOk");
+  modalAlta.classList.add("active");
+});
+btnCerrarAlta.addEventListener("click", cerrarModalAlta);
+modalAlta.addEventListener("click", e => {
+  if (e.target === modalAlta) cerrarModalAlta();
+});
 
 function cerrarModalAlta() {
-  modalAltaSocio.classList.remove("active");
+  modalAlta.classList.remove("active");
+  ["altaNombre","altaApellido1","altaApellido2","altaNif",
+   "altaEmail","altaTelefono","altaHijo1","altaHijo2","altaHijo3","altaHijo4"]
+    .forEach(id => { document.getElementById(id).value = ""; });
+  document.getElementById("altaRgpd").checked = false;
+  ocultarError("altaError");
+  ocultarOk("altaOk");
 }
 
-async function siguienteIdSocio() {
-  const snap = await getDocs(collection(db, "socios"));
-  let max = 0;
-  snap.forEach(d => {
-    const id = parseInt(d.data().IdSocio) || 0;
-    if (id > max) max = id;
-  });
-  return max + 1;
-}
+// Enviar alta
+document.getElementById("btnEnviarAlta").addEventListener("click", async () => {
+  ocultarError("altaError");
+  ocultarOk("altaOk");
 
-btnAltaSocio.addEventListener("click", abrirModalAlta);
-btnCancelarAlta.addEventListener("click", cerrarModalAlta);
-modalAltaSocio.addEventListener("click", e => { if (e.target === modalAltaSocio) cerrarModalAlta(); });
-
-btnGuardarAlta.addEventListener("click", async () => {
   const nombre    = document.getElementById("altaNombre").value.trim();
   const apellido1 = document.getElementById("altaApellido1").value.trim();
   const apellido2 = document.getElementById("altaApellido2").value.trim();
-  const mail      = document.getElementById("altaMail").value.trim().toLowerCase();
-  const telefono  = document.getElementById("altaTelefono").value.trim();
   const nif       = document.getElementById("altaNif").value.trim().toUpperCase();
+  const email     = document.getElementById("altaEmail").value.trim().toLowerCase();
+  const telefono  = document.getElementById("altaTelefono").value.trim();
   const hijo1     = document.getElementById("altaHijo1").value.trim();
+  const hijo2     = document.getElementById("altaHijo2").value.trim();
+  const hijo3     = document.getElementById("altaHijo3").value.trim();
+  const hijo4     = document.getElementById("altaHijo4").value.trim();
+  const rgpd      = document.getElementById("altaRgpd").checked;
+  const btn       = document.getElementById("btnEnviarAlta");
 
-  if (!nombre || !apellido1 || !mail || !hijo1) {
-    alert("Nombre, primer apellido, email e Hijo1 son obligatorios.");
-    return;
+  if (!nombre || !apellido1 || !nif || !email || !telefono || !hijo1) {
+    mostrarError("altaError", "Rellena todos los campos obligatorios (*)."); return;
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
-    alert("El email no es válido.");
-    return;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    mostrarError("altaError", "El email no es válido."); return;
+  }
+  if (!rgpd) {
+    mostrarError("altaError", "Debes aceptar la Política de Privacidad para continuar."); return;
   }
 
-  btnGuardarAlta.disabled = true;
-  btnGuardarAlta.textContent = "Enviando...";
+  btn.disabled = true; btn.textContent = "Enviando...";
 
   try {
-    const idSocio = String(await siguienteIdSocio());
+    const idSocio = await siguienteIdSocio();
 
-    // Comprobar que no exista ya ese ID de documento
-    const existente = await getDoc(doc(db, "socios", idSocio));
-    if (existente.exists()) {
-      alert("Ha ocurrido un error generando tu número de socio. Inténtalo de nuevo.");
-      return;
-    }
-
-    const hijosData = {};
-    for (let i = 1; i <= 4; i++) {
-      hijosData[`Hijo${i}`] = document.getElementById(`altaHijo${i}`).value.trim();
-    }
-
-    const nuevoSocio = {
-      IdSocio: idSocio,
+    await setDoc(doc(db, "socios", idSocio), {
+      IdSocio:     idSocio,
       nombre,
-      Apellido1: apellido1,
-      Apellido2: apellido2,
-      mail,
-      telefono,
+      Apellido1:   apellido1,
+      Apellido2:   apellido2,
       nif,
-      activo: true,
+      mail:        email,
+      telefono,
+      Hijo1:       hijo1,
+      Hijo2:       hijo2,
+      Hijo3:       hijo3,
+      Hijo4:       hijo4,
+      activo:      false,
       cuotaPagada: false,
-      rol: "socio",
-      ...hijosData,
-    };
-
-    await setDoc(doc(db, "socios", idSocio), nuevoSocio);
-
-    notificarAltaSocio({
-      idSocio,
-      nombre,
-      apellido1,
-      apellido2,
-      mail,
-      telefono
+      rol:         "socio",
+      rgpd:        true,
+      fecha_alta:  new Date().toISOString()
     });
 
-    cerrarModalAlta();
-    alert("✅ ¡Inscripción enviada correctamente! En breve confirmaremos tu alta como socio.");
+    mostrarOk("altaOk",
+      "✅ Solicitud enviada. La junta activará tu cuenta y te avisará por email.");
+    setTimeout(() => cerrarModalAlta(), 3000);
 
   } catch (err) {
     console.error(err);
-    alert("❌ Error al enviar la inscripción. Inténtalo de nuevo.");
+    mostrarError("altaError", "Error de conexión. Inténtalo de nuevo.");
   } finally {
-    btnGuardarAlta.disabled = false;
-    btnGuardarAlta.textContent = "📋 Enviar inscripción";
+    btn.disabled = false; btn.textContent = "Enviar solicitud";
   }
 });
