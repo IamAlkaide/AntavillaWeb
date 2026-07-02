@@ -105,24 +105,36 @@ document.getElementById("btnRegistro").addEventListener("click", async () => {
 
   btn.disabled = true; btn.textContent = "Comprobando...";
 
+  let credencial = null;
   try {
+    // 1. Crear usuario en Auth primero (sin leer Firestore — no hay auth todavía)
+    credencial = await createUserWithEmailAndPassword(auth, email, pass1);
+
+    // 2. Ahora SÍ estamos autenticados → leer socios
     const q    = query(collection(db, "socios"), where("mail", "==", email));
     const snap = await getDocs(q);
 
     if (snap.empty) {
+      // Email no existe en socios → borrar el usuario de Auth recién creado y abortar
+      await credencial.user.delete();
       mostrarError("registroError",
         "Este email no corresponde a ningún socio registrado. Contacta con la AFA."); return;
     }
     if (!snap.docs[0].data().activo) {
+      // Socio existe pero no activo → borrar usuario de Auth y abortar
+      await credencial.user.delete();
       mostrarError("registroError",
         "Tu cuenta de socio no está activa aún. La junta debe activarla primero."); return;
     }
 
-    const credencial = await createUserWithEmailAndPassword(auth, email, pass1);
-    await updateDoc(snap.docs[0].ref, { uid: credencial.user.uid });
-    await signOut(auth);
+    // 3. Guardar uid en el documento del socio — no crítico
+    try {
+      await updateDoc(snap.docs[0].ref, { uid: credencial.user.uid });
+    } catch (e) {
+      console.warn("uid no guardado en socios (no crítico):", e.message);
+    }
 
-    mostrarOk("registroOk", "✅ Acceso creado correctamente. Ya puedes iniciar sesión.");
+    mostrarOk("registroOk", "\u2705 Acceso creado correctamente. Ya puedes iniciar sesión.");
     ["regEmail", "regPassword", "regPassword2"].forEach(id => {
       document.getElementById(id).value = "";
     });
@@ -134,6 +146,7 @@ document.getElementById("btnRegistro").addEventListener("click", async () => {
         : "Error de conexión. Inténtalo de nuevo."
     );
   } finally {
+    try { await signOut(auth); } catch (_) {}
     btn.disabled = false; btn.textContent = "Crear acceso";
   }
 });
